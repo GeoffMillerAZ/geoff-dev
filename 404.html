@@ -49,11 +49,13 @@
       resume:       (p) => p.role ? { roleId: p.role } : null,
       projects:     (p) => p.project ? { projectId: p.project } : null,
       achievements: (p) => p.achievement ? { achievementId: p.achievement } : null,
+      articles:     (p) => p.article ? { articleId: p.article } : null,
     };
     const DEEPLINK_TO_PARAM = {
       resume:       (d) => d && d.roleId ? { role: d.roleId } : {},
       projects:     (d) => d && d.projectId ? { project: d.projectId } : {},
       achievements: (d) => d && d.achievementId ? { achievement: d.achievementId } : {},
+      articles:     (d) => d && d.articleId ? { article: d.articleId } : {},
     };
     const router = AppKitRouter.create({ routes: ROUTES, notFound: "chat" });
 
