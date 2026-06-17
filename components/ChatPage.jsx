@@ -7,7 +7,7 @@ const CHAT_DEMO = [
     a: [
       { p: "Short answer: **yes**, and the fit is unusually clean. Here's why:" },
       { ul: [
-        "**12 years of regulated FinTech cloud.** FFIEC / PCI-DSS / SOC 2 compliance across 100+ AWS accounts at Early Warning (Zelle), REPAY, Silicon Valley Bank, and First Citizens Bank.",
+        "**12 years of regulated FinTech cloud.** FFIEC / PCI-DSS / SOC 2 compliance and a 100+ account AWS landing zone across regulated FinTechs — Early Warning (Zelle), REPAY, Silicon Valley Bank, and First Citizens Bank.",
         "**30% YoY AWS spend cut at FCB** via FinOps dashboards and event-driven rightsizing — *without* touching reliability.",
         "**Bank-hardened EKS platform:** multi-AZ, CIS-benchmarked, OPA/Gatekeeper, automated zero-day node patching.",
         "**Override-as-code:** every security exception peer-reviewed and committed to Git — auditors love it.",
@@ -40,7 +40,7 @@ const CHAT_DEMO = [
         "**30% YoY cut at First Citizens Bank** across 100+ AWS accounts via FinOps dashboards + automated rightsizing.",
         "**70%+ cut** on non-prod at multiple orgs via event-driven teardown/spin-up automation.",
         "**VPC endpoint consolidation:** replaced thousands of duplicate interface endpoints with a single multi-AZ hub — top-3 AWS line item → negligible. Hundreds of thousands saved annually.",
-        "**$300k/yr** saved at OWNZONES on storage alone via S3 lifecycle + Glacier.",
+        "**S3 lifecycle + Glacier** storage-cost optimization for green-field video infrastructure at OWNZONES.",
       ]},
       { p: "Method is boring on purpose: instrument first, tag everything, event-driven automation in the margins, never ship a cost optimization without a rollback plan. `cost_allocation.enabled = true` is where it starts." },
     ],
@@ -54,7 +54,7 @@ const CHAT_DEMO = [
       { ul: [
         "**Servant leadership** — I draw the architecture, hand you the guardrails, get out of the way.",
         "**Mentoring loop:** pair → pattern → delegate → audit. Every hire should be doing my job in two years.",
-        "**Writes a lot:** 35 whitepapers across 12 post-incident reviews at PayPal. If it's not written, it didn't happen.",
+        "**Writes a lot:** turns incidents and architecture into deterministic documentation artifacts — GameDay readiness reports, ARB-ready docs. If it's not written, it didn't happen.",
         "**Decisive in crisis, patient in design.** Happy to sit in silence during a P1.",
       ]},
     ],
@@ -157,7 +157,7 @@ const ChatPage = () => {
           Ask my <span className="grad">résumé</span> anything.
         </h1>
         <p className="sub">
-          Paste a JD or just ask — I'll answer from 12 years of cloud + agentic AI.4, and the messy practical bits in between. Try one of the starter prompts.
+          Paste a JD or just ask — I'll answer from 12 years of cloud + agentic AI, and the messy practical bits in between. Try one of the starter prompts.
         </p>
       </div>
 

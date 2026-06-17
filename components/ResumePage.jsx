@@ -30,8 +30,8 @@ const topBulletsFor = (role, persona, n = 3) => {
 /* Persona-aware global dashboard stats */
 const DASH_STATS = {
   ai: [
-    { value: "L4",       label: "Agentic software engineering",  sub: "at PayPal · live in production" },
-    { value: "35",       label: "Post-incident whitepapers",     sub: "actionable, across 12 PIRs" },
+    { value: "L4/5",     label: "Agentic engineering harnesses", sub: "at PayPal · planning → build → validation" },
+    { value: "Top",      label: "AI user, enterprise-wide",      sub: "PayPal AI Super Users community" },
     { value: "3×",       label: "Dev throughput lift",           sub: "patterned agents + competing-incentive verification" },
     { value: "12y",      label: "Infra depth backing the AI",    sub: "AWS · Kubernetes · CNCF · regulated FinTech" },
   ],
@@ -39,7 +39,7 @@ const DASH_STATS = {
     { value: "100+",     label: "AWS accounts governed",         sub: "landing zone · multi-region · bank-hardened" },
     { value: "30%",      label: "YoY AWS spend cut",             sub: "FinOps automation at First Citizens" },
     { value: "0",        label: "PCI criticals",                 sub: "first-time green-field pass at REPAY" },
-    { value: "25M",      label: "Users launched",                sub: "Zelle · zero downtime at launch" },
+    { value: "70%+",     label: "Non-prod spend cut",            sub: "event-driven environments" },
   ],
   leadership: [
     { value: "1 → 18",   label: "Team grown",                    sub: "REPAY infra org, from the ground up" },
@@ -224,7 +224,7 @@ const RoleDetail = ({ role, persona, onBack }) => {
 const AtsResume = () => {
   const D = window.SITE_DATA;
   const p = D.profile;
-  const summary = "Infrastructure Director and Principal Cloud Architect with 20 years in IT and 12 years designing, leading, and operating cloud platforms at regulated FinTechs. Deep expertise in AWS, Kubernetes, and the CNCF ecosystem with a focus on platform engineering, DevSecOps, FinOps automation, policy-as-code compliance (FFIEC, PCI-DSS, SOC 2), and Level-4 agentic software engineering. Proven record cutting cloud spend 30%+, governing 100+ AWS accounts, launching products at 25M-user scale, and building high-performing platform teams.";
+  const summary = "Infrastructure Director and Principal Cloud Architect with 20 years in IT and 12 years designing, leading, and operating cloud platforms at regulated FinTechs. Deep expertise in AWS, Kubernetes, and the CNCF ecosystem with a focus on platform engineering, DevSecOps, FinOps automation, policy-as-code compliance (FFIEC, PCI-DSS, SOC 2), and Level-4 agentic software engineering. Proven record cutting cloud spend 30%+, governing 100+ AWS accounts, passing PCI-DSS with zero criticals, and building high-performing platform teams.";
 
   return ReactDOM.createPortal(
     <div className="ats-doc" aria-hidden="true">
@@ -589,6 +589,7 @@ const ResumePage = () => {
                 <div>
                   <div className="edu-card-degree">{e.degree}</div>
                   <div className="edu-card-school">{e.school}</div>
+                  {e.honors && <div className="edu-card-school" style={{ color: "var(--accent)", fontSize: 12 }}>{e.honors}</div>}
                 </div>
                 <div className="edu-card-year">{e.year}</div>
               </div>
@@ -610,25 +611,25 @@ const EducationDetail = ({ onBack }) => {
   React.useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, []);
 
   const milestones = [
-    { year: "2009", label: "Enrolled", sub: "NIU · B.S. Computer Science" },
-    { year: "2013", label: "B.S. awarded", sub: "CS fundamentals · systems · algorithms" },
-    { year: "2013", label: "Accelerated into M.S.", sub: "Graduate CS · NIU" },
-    { year: "2015", label: "M.S. Computer Science", sub: "Graduate thesis-adjacent coursework" },
+    { year: "2012", label: "Teaching Assistant", sub: "Data Structures & Algorithms · NIU" },
+    { year: "2013", label: "B.S. Computer Science", sub: "Magna Cum Laude · 3.75 GPA · emphasis in Mainframes" },
+    { year: "2013", label: "Graduate Assistant", sub: "Data Structures & Algorithms · continued across 8 semesters" },
+    { year: "2015", label: "M.S. Computer Science", sub: "emphasis in Network Programming & Database Systems" },
     { year: "2015", label: "→ Career launch", sub: "AZ Dept. of Administration · mainframe modernization" },
   ];
 
   const foundations = [
-    { title: "Systems & Architecture", items: ["Operating systems", "Computer architecture", "Distributed systems", "Networks & protocols"] },
-    { title: "Algorithms & Theory",   items: ["Data structures", "Algorithm design", "Complexity theory", "Formal languages"] },
-    { title: "Software Engineering",   items: ["OOP & design patterns", "Software architecture", "Testing & verification", "Version control discipline"] },
-    { title: "Applied Graduate Work",  items: ["Advanced algorithms", "Research methods", "Database internals", "Machine learning foundations"] },
+    { title: "Undergraduate — Mainframes", items: ["Mainframe systems", "Computer architecture", "Operating systems", "Upper Division Honors"] },
+    { title: "Graduate — Networks",        items: ["Network programming", "Protocols & concurrency", "Distributed systems", "Systems design"] },
+    { title: "Graduate — Databases",       items: ["Database systems", "Relational set theory", "Relational calculus", "Relational algebra"] },
+    { title: "Taught for 8 semesters",     items: ["TA → GA · Data Structures & Algorithms", "Algorithm design & analysis", "Mentoring undergraduates", "Explaining hard ideas simply"] },
   ];
 
   const fromClassToCareer = [
-    { phase: "CS fundamentals", then: "Learned correctness, rigor, and systems thinking.", now: "Shows up as policy-as-code and formally-gated compliance at FCB." },
-    { phase: "Distributed systems", then: "Studied consensus, consistency, failure modes.", now: "Landing Zone across 100+ AWS accounts with sub-5 ms hybrid links." },
-    { phase: "Software architecture", then: "Patterns, modularity, interface discipline.", now: "Reusable IaC patterns — cloud migrations from months to a day." },
-    { phase: "Theory & algorithms", then: "Problem decomposition and proof mindset.", now: "Agentic verification — competing-incentive checks against code-gen." },
+    { phase: "Mainframes & COBOL", then: "Undergraduate emphasis — legacy systems, discipline, correctness.", now: "Started my career modernizing mainframe COBOL with Git and unit testing." },
+    { phase: "Relational theory", then: "Relational set theory, calculus, and algebra in graduate database work.", now: "Shows up as CUE-typed, structured-data artifacts that make agentic output deterministic." },
+    { phase: "Network programming", then: "Graduate emphasis — protocols, concurrency, distributed systems.", now: "Landing Zones across 100+ AWS accounts with sub-5 ms hybrid links." },
+    { phase: "Teaching DS & Algorithms", then: "TA then GA for 8 semesters — explaining hard ideas simply.", now: "Mentoring platform teams and running a Cloud Community of Practice." },
   ];
 
   return (
@@ -661,12 +662,12 @@ const EducationDetail = ({ onBack }) => {
               <span className="sep">·</span>
               <span>2009 — 2015</span>
             </div>
-            <p className="role-detail-tagline">Six years of CS theory and applied systems work — the foundation that made the last decade of cloud platforms, FinTech regulatory pressure, and agentic AI engineering possible.</p>
+            <p className="role-detail-tagline">A Magna Cum Laude B.S. (3.75 GPA, Upper Division Honors) with an emphasis in mainframes, then an M.S. emphasizing network programming and database systems — relational set theory, calculus, and algebra. Taught Data Structures &amp; Algorithms as TA, then GA, across 8 semesters.</p>
             <div className="role-detail-scope">
-              <span className="scope-chip">B.S. 2013</span>
-              <span className="scope-chip">M.S. 2015</span>
-              <span className="scope-chip">Accelerated</span>
-              <span className="scope-chip">CS Theory</span>
+              <span className="scope-chip">Magna Cum Laude</span>
+              <span className="scope-chip">3.75 GPA</span>
+              <span className="scope-chip">Upper Division Honors</span>
+              <span className="scope-chip">TA → GA · 8 semesters</span>
             </div>
           </div>
         </div>
@@ -681,7 +682,7 @@ const EducationDetail = ({ onBack }) => {
         </div>
         <div className="edu-timeline">
           {milestones.map((m, i) => (
-            <div key={i} className={"edu-milestone" + (m.label.includes("awarded") || m.label.includes("M.S. Comp") ? " is-major" : "")}>
+            <div key={i} className={"edu-milestone" + (m.label.includes("B.S.") || m.label.includes("M.S.") ? " is-major" : "")}>
               <div className="edu-mile-year">{m.year}</div>
               <div className="edu-mile-dot" aria-hidden="true"></div>
               <div className="edu-mile-body">
@@ -720,9 +721,9 @@ const EducationDetail = ({ onBack }) => {
           <h2>By the numbers</h2>
         </div>
         <div className="stat-grid">
+          <div className="stat"><div className="stat-value">3.75<span className="unit">GPA</span></div><div className="stat-label">Magna Cum Laude</div><div className="stat-sub">B.S. · Upper Division Honors</div></div>
+          <div className="stat"><div className="stat-value">8<span className="unit">semesters</span></div><div className="stat-label">TA → GA</div><div className="stat-sub">Data Structures &amp; Algorithms</div></div>
           <div className="stat"><div className="stat-value">2<span className="unit">degrees</span></div><div className="stat-label">B.S. + M.S.</div><div className="stat-sub">Computer Science, NIU</div></div>
-          <div className="stat"><div className="stat-value">6<span className="unit">yrs</span></div><div className="stat-label">Continuous enrollment</div><div className="stat-sub">Undergrad + graduate, 2009–2015</div></div>
-          <div className="stat"><div className="stat-value">11<span className="unit">yrs since</span></div><div className="stat-label">Industry practice</div><div className="stat-sub">Mainframe → AWS → agentic AI</div></div>
           <div className="stat"><div className="stat-value">DeKalb</div><div className="stat-label">Home campus</div><div className="stat-sub">Northern Illinois University</div></div>
         </div>
       </section>
