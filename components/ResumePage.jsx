@@ -373,21 +373,42 @@ const ResumePage = () => {
                 <>
                   <div className="pdf-menu-scrim" onClick={() => setPdfMenu(false)} />
                   <div className="pdf-menu">
-                    <div className="pdf-menu-head">Who's reading?</div>
-                    <button className="pdf-opt" onClick={() => { setPdfMenu(false); printPretty(); }}>
+                    <div className="pdf-menu-head">Download · {PERSONA_LABELS[persona]} view</div>
+                    <a className="pdf-opt" href={`/resume/${persona}/resume.pdf`} download onClick={() => setPdfMenu(false)}>
                       <span className="pdf-opt-icon"><Icon name="user" size={18} /></span>
                       <span>
-                        <span className="pdf-opt-title">Human</span>
-                        <span className="pdf-opt-sub">The designed résumé — neon, dashboards, the {PERSONA_LABELS[persona].split(" ")[0]} view. For people.</span>
+                        <span className="pdf-opt-title">Human PDF</span>
+                        <span className="pdf-opt-sub">Designed and print-perfect — for people.</span>
                       </span>
-                    </button>
-                    <button className="pdf-opt" onClick={() => { setPdfMenu(false); printAts(); }}>
+                    </a>
+                    <a className="pdf-opt" href={`/resume/${persona}/resume.ats.pdf`} download onClick={() => setPdfMenu(false)}>
                       <span className="pdf-opt-icon"><Icon name="server" size={18} /></span>
                       <span>
-                        <span className="pdf-opt-title">Robot</span>
-                        <span className="pdf-opt-sub">ATS scanner-friendly — plain, single-column, every keyword. Beats the résumé bots.</span>
+                        <span className="pdf-opt-title">ATS PDF</span>
+                        <span className="pdf-opt-sub">Plain, single-column, parse-verified — beats the résumé bots.</span>
                       </span>
-                    </button>
+                    </a>
+                    <a className="pdf-opt" href={`/resume/${persona}/resume.txt`} download onClick={() => setPdfMenu(false)}>
+                      <span className="pdf-opt-icon"><Icon name="file" size={18} /></span>
+                      <span>
+                        <span className="pdf-opt-title">Plain text (.txt)</span>
+                        <span className="pdf-opt-sub">Maximum ATS compatibility.</span>
+                      </span>
+                    </a>
+                    <a className="pdf-opt" href={`/resume/${persona}/resume.md`} download onClick={() => setPdfMenu(false)}>
+                      <span className="pdf-opt-icon"><Icon name="book" size={18} /></span>
+                      <span>
+                        <span className="pdf-opt-title">Markdown (.md)</span>
+                        <span className="pdf-opt-sub">Human- and machine-readable.</span>
+                      </span>
+                    </a>
+                    <a className="pdf-opt" href={`/resume/${persona}/resume.json`} download onClick={() => setPdfMenu(false)}>
+                      <span className="pdf-opt-icon"><Icon name="layers" size={18} /></span>
+                      <span>
+                        <span className="pdf-opt-title">JSON Resume</span>
+                        <span className="pdf-opt-sub">Structured data for ATS & LLMs (jsonresume.org).</span>
+                      </span>
+                    </a>
                   </div>
                 </>
               )}

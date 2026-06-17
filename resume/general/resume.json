@@ -1,0 +1,165 @@
+{
+  "basics": {
+    "name": "Geoffrey Miller",
+    "label": "Sr Engineering Manager, SRE",
+    "url": "https://geoffmiller.cloud",
+    "summary": "Infrastructure Director and Principal Cloud Architect with 12 years designing and operating cloud platforms at regulated FinTechs (20 years in IT). Builds high-performing platform teams, manages stakeholders across business and technology, and ships simple repeatable engineering patterns that cut spend 30%+ while tightening compliance. Advanced leader in agentic software engineering — ships controlled agentic layers using MCP servers, patterned agents, and automated verification with competing incentives.",
+    "location": {
+      "city": "Phoenix",
+      "region": "AZ",
+      "countryCode": "US"
+    },
+    "profiles": [
+      {
+        "network": "LinkedIn",
+        "username": "in/geoff-e-miller",
+        "url": "https://linkedin.com/in/geoff-e-miller"
+      },
+      {
+        "network": "GitHub",
+        "username": "GeoffMillerAZ",
+        "url": "https://github.com/GeoffMillerAZ"
+      }
+    ]
+  },
+  "work": [
+    {
+      "name": "PayPal",
+      "position": "Sr Engineering Manager, SRE",
+      "startDate": "2025-10",
+      "highlights": [
+        "Lead and specialize in agentic software engineering — mostly-automated development with controlled approval gates.",
+        "Ship agentic code and configuration review tools with automatic approval-recommendation gates for the Command Center.",
+        "Built real-time incident management and collaboration tooling that speeds up live P0/P1 incident recovery.",
+        "Built a risk inventory system mapping mitigation capabilities and auditing reliability readiness across all PayPal brands.",
+        "Authored GameDay tooling that ingests incident logs and chat transcripts to generate agentically-scored readiness feedback.",
+        "Recognized as a top-impact AI user enterprise-wide; appointed to PayPal's AI Super Users community.",
+        "Consult across all PayPal brands on cloud architecture, DevOps, and reliability engineering."
+      ]
+    },
+    {
+      "name": "First Citizens Bank",
+      "position": "Director of Cloud Infrastructure",
+      "startDate": "2021-07",
+      "endDate": "2025-09",
+      "highlights": [
+        "Architected and delivered a secure multi-account AWS Landing Zone (100+ accounts) with centralized logging, IAM federation, and policy-as-code guardrails enabling 30+ product teams.",
+        "Led FinOps program; reduced AWS spend 30% year-over-year via dashboards, automated rightsizing, and savings-plan optimization.",
+        "Replaced thousands of duplicate VPC interface endpoints with a single multi-AZ endpoint hub — a top-3 line item → negligible.",
+        "Designed hybrid connectivity with AWS Direct Connect, Azure ExpressRoute, and Megaport for sub-5ms latency.",
+        "Guided the team through the Silicon Valley Bank → First Citizens Bank integration, including platform migrations.",
+        "Led and mentored a 12-member cloud platform engineering team; founded the Cloud Community of Practice.",
+        "Enforced continuous FFIEC, PCI-DSS, and SOC 2 compliance via policy-as-code gates (Sentinel, OPA) integrated into CI/CD.",
+        "Engineered bank-hardened EKS platform — multi-AZ, CIS-hardened, OPA/Gatekeeper, Karpenter, automated zero-day patching.",
+        "Decomposed monolithic repo into team-owned repos with CODEOWNERS and mandatory gates; lead time 6–12 weeks → days.",
+        "Served on the bank's AI governance board — crafted secure onboarding patterns for GenAI/ML tools."
+      ]
+    },
+    {
+      "name": "REPAY (Realtime Electronic Payments)",
+      "position": "Director of Cloud Infrastructure",
+      "startDate": "2017-10",
+      "endDate": "2021-07",
+      "highlights": [
+        "Built green-field AWS platform with Terraform, Packer, and Kubernetes; passed PCI-DSS audit with zero critical findings.",
+        "Launched Backstage Internal Developer Platform and Documentation-as-Code; cut documentation drift 75%.",
+        "Grew infrastructure and SRE organization from 1 engineer to 18 across SRE, ops, and platform development.",
+        "Established FinOps automation cutting AWS spend 30% year-over-year.",
+        "Built reusable landing-zone patterns reducing cloud migration onboarding from months to a single day.",
+        "Deployed Prometheus / Loki / Grafana observability stack with 24/7 PagerDuty on-call.",
+        "Built secure EKS with GitOps, admission control, and multi-dimensional autoscaling."
+      ]
+    },
+    {
+      "name": "Early Warning Services (Zelle)",
+      "position": "DevOps Engineer",
+      "startDate": "2017-01",
+      "endDate": "2017-10",
+      "highlights": [
+        "DevOps engineering at Early Warning Services — the bank-owned network that operates Zelle — during the launch period.",
+        "Built immutable CI/CD pipelines and containerized microservices supporting daily releases.",
+        "Automated blue/green deployments and A/B testing to reduce deployment risk."
+      ]
+    },
+    {
+      "name": "Thinkvine",
+      "position": "Principal Cloud Architect",
+      "startDate": "2016-04",
+      "endDate": "2017-01",
+      "highlights": [
+        "Migrated Windows and Linux workloads to AWS, converting legacy infrastructure to Terraform IaC with CI/CD."
+      ]
+    },
+    {
+      "name": "OWNZONES Media Network",
+      "position": "Lead DevOps Engineer",
+      "startDate": "2016-04",
+      "endDate": "2016-07",
+      "highlights": [
+        "Designed green-field AWS infrastructure for video workloads using S3 lifecycle policies and Glacier archival to optimize storage cost."
+      ]
+    },
+    {
+      "name": "State of Arizona, Dept. of Administration",
+      "position": "Applications Developer",
+      "startDate": "2015-01",
+      "endDate": "2016-04",
+      "highlights": [
+        "Introduced Git source control and automated unit testing to mainframe COBOL systems."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Northern Illinois University",
+      "area": "Science",
+      "studyType": "M.S. Computer",
+      "endDate": "2015-05"
+    },
+    {
+      "institution": "Northern Illinois University",
+      "area": "Science",
+      "studyType": "B.S. Computer",
+      "endDate": "2013-05",
+      "score": "3.75"
+    }
+  ],
+  "skills": [
+    {
+      "name": "Platform Engineering"
+    },
+    {
+      "name": "Cloud Architecture (AWS primary)"
+    },
+    {
+      "name": "Kubernetes / CNCF"
+    },
+    {
+      "name": "FinOps \u0026 Cloud Cost Optimization"
+    },
+    {
+      "name": "GitOps \u0026 IaC (Terraform / Pulumi)"
+    },
+    {
+      "name": "SRE \u0026 Incident Management"
+    },
+    {
+      "name": "DevSecOps \u0026 Policy-as-Code"
+    },
+    {
+      "name": "Agentic Engineering \u0026 MCP"
+    },
+    {
+      "name": "Team Leadership \u0026 Mentoring"
+    },
+    {
+      "name": "Compliance (FFIEC / PCI-DSS / SOC 2)"
+    }
+  ],
+  "certificates": [
+    {
+      "name": "Claude Certified Architect — Foundations (Anthropic) [IN PROGRESS]",
+      "issuer": "Anthropic"
+    }
+  ]
+}
