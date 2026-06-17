@@ -108,6 +108,25 @@ const SystemPromptPeek = () => (
   </pre>
 );
 
+// Live governed chat backend (AWS Lambda via API Gateway). Public endpoint;
+// abuse/cost guards live server-side.
+const CHAT_ENDPOINT = window.CHAT_ENDPOINT || "https://juybni0ik4.execute-api.us-east-1.amazonaws.com/";
+
+// renderAnswer turns the agent's markdown-ish text into paragraphs, bullet
+// lists, and inline bold/code — no markdown library needed.
+function renderAnswer(text) {
+  return String(text).split(/\n{2,}/).map((blk, i) => {
+    const lines = blk.split("\n").filter(l => l.trim() !== "");
+    const isList = lines.length > 0 && lines.every(l => /^\s*[-*•]\s+/.test(l));
+    if (isList) {
+      return <ul key={i}>{lines.map((l, j) => (
+        <li key={j} dangerouslySetInnerHTML={{ __html: inline(l.replace(/^\s*[-*•]\s+/, "")) }} />
+      ))}</ul>;
+    }
+    return <p key={i} dangerouslySetInnerHTML={{ __html: inline(blk.replace(/\n/g, "<br/>")) }} />;
+  });
+}
+
 const ChatPage = () => {
   const [turns, setTurns] = React.useState([]);
   const [pending, setPending] = React.useState(false);
@@ -121,32 +140,37 @@ const ChatPage = () => {
     bottomRef.current?.parentElement?.scrollTo?.({ top: 999999, behavior: "smooth" });
   }, [turns, pending]);
 
-  const askFromChip = (demo) => {
-    if (pending) return;
-    usedRef.current.add(demo.q);
-    const userTurn = { role: "user", content: demo.q };
-    setTurns(t => [...t, userTurn]);
+  // send asks the live governed agent and appends its answer.
+  const send = async (raw) => {
+    const q = (raw || "").trim();
+    if (!q || pending) return;
+    usedRef.current.add(q);
+    setTurns(t => [...t, { role: "user", content: q }]);
     setPending(true);
-    setTimeout(() => {
-      setTurns(t => [...t, { role: "assistant", content: demo.a, sources: demo.sources }]);
+    try {
+      const persona = localStorage.getItem("persona") || "ai";
+      const res = await fetch(CHAT_ENDPOINT, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ question: q, persona }),
+      });
+      const data = await res.json().catch(() => ({}));
+      setTurns(t => [...t, { role: "assistant", content: data.answer || "Sorry, I couldn't answer that one — try rephrasing." }]);
+    } catch (err) {
+      setTurns(t => [...t, { role: "assistant", content: "I couldn't reach the agent just now — please try again in a moment." }]);
+    } finally {
       setPending(false);
-    }, 1400);
+    }
   };
+
+  const askFromChip = (demo) => { send(demo.q); };
 
   const onSubmit = (e) => {
     e?.preventDefault?.();
     const q = input.trim();
     if (!q || pending) return;
     setInput("");
-    // Try to match a demo roughly; otherwise use a generic fallback
-    const matched = CHAT_DEMO.find(d => !usedRef.current.has(d.q)) || CHAT_DEMO[0];
-    setTurns(t => [...t, { role: "user", content: q }]);
-    setPending(true);
-    setTimeout(() => {
-      setTurns(t => [...t, { role: "assistant", content: matched.a, sources: matched.sources }]);
-      usedRef.current.add(matched.q);
-      setPending(false);
-    }, 1400);
+    send(q);
   };
 
   return (
@@ -170,7 +194,9 @@ const ChatPage = () => {
               <div className="msg-body">
                 <div className="msg-who">{t.role === "user" ? "Recruiter" : "geoff-agent"}</div>
                 <div className="msg-content">
-                  {typeof t.content === "string" ? <p>{t.content}</p> : renderContent(t.content)}
+                  {typeof t.content === "string"
+                    ? (t.role === "assistant" ? renderAnswer(t.content) : <p>{t.content}</p>)
+                    : renderContent(t.content)}
                   {t.sources && (
                     <div style={{ marginTop: 14, display: "flex", flexWrap: "wrap", gap: 6 }}>
                       {t.sources.map((s, j) => {
@@ -221,7 +247,7 @@ const ChatPage = () => {
                   onClick={() => window.ROUTE_SET?.("resume")}>
             persona: {(localStorage.getItem("persona") || "ai")}
           </button>
-          <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--text-mute)" }}>claude-sonnet-4.5 · 8k ctx</span>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--text-mute)" }}>claude-haiku-4.5 · live</span>
           <button type="submit" className="btn btn-primary btn-sm" disabled={!input.trim() || pending}>
             <Icon name="send" size={13} />
             Send
