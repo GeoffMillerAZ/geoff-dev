@@ -301,8 +301,8 @@ const ProjectsPage = () => {
       </div>
 
       {[
-        { owner: "org",  label: "Organization work", sub: "Built and led inside employers — owned by them, shipped by me." },
         { owner: "mine", label: "My projects",       sub: "Created and owned by me — source on GitHub." },
+        { owner: "org",  label: "Organization work", sub: "Built and led inside employers — owned by them, shipped by me." },
       ].map(group => {
         const groupList = filtered.filter(p => p.owner === group.owner);
         if (groupList.length === 0) return null;
