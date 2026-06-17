@@ -282,6 +282,45 @@ window.SITE_DATA = {
       date: "2026-06-16",
       read: "8 min",
       summary: "Every team that hasn't shifted left has shifted luck — they've just moved the discovery of defects, security gaps, and compliance failures to production, where luck decides whether a customer or an auditor finds them first. Shifting left means building correctness in early: policy-as-code gates, automated verification, and deterministic artifacts that fail the build instead of the bank. The alternative to shifting left was never 'move faster' — it was gambling, and quietly hoping the dice land your way.",
+      body: `## The thing everyone calls "moving fast" is usually shifting luck
+
+There are two strategies for dealing with software defects, security gaps, and compliance failures. The first is to find them before they reach production. The second is to find them after — and hope luck decides it's a developer who finds them, not a customer or an auditor.
+
+Most teams choose the second strategy without realizing it. They call it "moving fast."
+
+Shifting left is not a philosophy. It is a set of concrete engineering choices that move the discovery of failures from production to the build pipeline. The choices are not complicated. What they require is that you stop treating correctness as somebody else's problem and start building it into every artifact the pipeline produces.
+
+## What shifting left actually looks like
+
+**Policy-as-code gates** are the most durable form of shifting left at the infrastructure layer. When a Terraform plan runs through OPA or Sentinel before it applies, you cannot ship a misconfigured S3 bucket to production. The policy runs on every plan, against every branch, before any human reviews anything. The rule doesn't get tired on a Friday afternoon.
+
+At First Citizens Bank, running 100+ AWS accounts across FFIEC, PCI-DSS, and SOC 2 requirements, policy-as-code wasn't optional — it was the only realistic way to maintain continuous compliance posture without a dedicated human reviewing every resource change. The alternative was a quarterly audit that found problems months after they were introduced.
+
+**Automated verification with competing incentives** takes this further into the agentic tier. When an agent authors a configuration change, a separate verifier agent — with different system context and different incentives — audits the output before it lands. The verifier isn't trying to help the author; it's trying to find holes. That adversarial relationship is the point.
+
+**Deterministic artifacts** close the gap between "it worked in CI" and "it worked in production." A container image that is reproducibly built from a pinned base, signed, and hash-verified at deploy time is not the same artifact as one that was built from <code>latest</code> on a developer laptop. Reproducibility is not a performance optimization. It is a correctness property.
+
+## The asymmetry nobody talks about
+
+The cost of finding a defect scales exponentially with how far right it travels.
+
+A failed unit test costs thirty seconds. A failed policy gate costs a pipeline re-run. A security gap found in a pre-prod environment costs a day of remediation. The same gap found by a PCI auditor costs six figures and a project freeze.
+
+Every team knows this asymmetry intellectually. Most don't act on it, because the pain of a build failure is immediate and the benefit of preventing a production incident is counterfactual. You never see the incident that didn't happen.
+
+The teams that shift left consistently have usually experienced the alternative: a data breach, a compliance finding, a production incident caused by a misconfiguration that was visible in the diff for two weeks before anyone noticed. Once you've paid that tax, the thirty-second pipeline failure feels like a bargain.
+
+## What "move faster" actually requires
+
+Here is the uncomfortable truth: shifting left is what actually makes teams move faster. Not in the first week. In the third month.
+
+A team that ships correct, policy-compliant, reproducibly-built artifacts doesn't spend its Friday afternoons on emergency rollbacks. It doesn't spend its Q3 on a remediation sprint after an audit finding. It doesn't lose two engineers for a month tracking down a production bug that was visible in the test suite if anyone had looked.
+
+The teams I've watched move the fastest over a sustained period are the ones where the pipeline is the floor, not the ceiling. Where a green build is a meaningful signal, not a formality. Where the definition of "done" includes "verified by something that doesn't share your assumptions."
+
+**Shift left is not overhead.** It is the cost of engineering instead of gambling. The alternative to shifting left was never "move faster." It was accepting that luck is part of your architecture — and quietly hoping the dice keep landing your way.
+
+The dice don't always land your way.`,
     },
     {
       id: "why-agentic-kit",
@@ -291,6 +330,49 @@ window.SITE_DATA = {
       date: "2026-06-12",
       read: "11 min",
       summary: "Raw LLM calls are not an engineering platform. An agentic-kit is the governed harness that sits between your agents and production: budget guards, injection detection, replay-tested determinism, competing-incentive verification, and provenance journaling. Without it you have demos; with it you have software you can put in front of a regulated enterprise.",
+      body: `## The demo problem
+
+Every agentic system looks great in a demo. The model is smart, the tool calls are plausible, the output is coherent. Then you put it in front of a production workload and discover that "coherent" and "correct" are not the same thing — and that there is nothing between the model's output and your infrastructure to tell the difference.
+
+Raw LLM calls are not an engineering platform. They are a capability. An agentic-kit is the governed harness that turns that capability into software you can actually put in front of a regulated enterprise.
+
+## The governed agent loop
+
+The architecture that works — the one I built agentic-kit around — has a specific shape. Every agent interaction flows through the same loop:
+
+- **Model turn.** The model receives context and produces either a message or a tool call request.
+- **Tool dispatch.** Tool calls are routed through a registry that validates the call signature, checks the caller's current budget, and logs the intent before dispatch.
+- **Governance screens.** Before execution, the tool call passes through the endpoint guard. This is where injection detection runs, where the strike ledger is checked, and where proof-of-work challenges can be imposed on suspicious callers.
+
+The endpoint guard is fail-closed. If it cannot make a trust decision — network partition, schema mismatch, budget exhaustion — the call does not execute. The default behavior is denial, not permissiveness. This is the opposite of what most teams build when they wire up tool calling for the first time, and it is the difference that matters in a regulated environment.
+
+## The strike ledger and circuit breaker
+
+Not all failures are equal. An agent that makes one malformed tool call might have hit a transient edge case. An agent that makes fifteen unusual tool calls in rapid succession is doing something that deserves human attention.
+
+The strike ledger in agentic-kit maintains a per-agent, per-session record of governance events: injection attempts, budget warnings, schema violations, repeated failures. The circuit breaker watches this record and applies escalating responses — from rate limiting, to proof-of-work challenges that slow down automated callers, to full session suspension pending review.
+
+The proof-of-work mechanism is particularly useful against prompt injection. An attacker who has convinced an agent to call a forbidden endpoint will find that the endpoint guard responds with a computational challenge before proceeding. Automated injection pipelines fail this reliably. A legitimate agent call, where a human is in the loop, can satisfy it with minimal friction.
+
+## Replay determinism and hash-chained provenance
+
+One of the hardest properties to add to an agentic system after the fact is replay determinism — the ability to re-run a past interaction and verify that the same inputs produce the same outputs. Without it, you cannot debug production failures, you cannot write meaningful regression tests, and you cannot satisfy an auditor who wants to know exactly what the agent did and why.
+
+agentic-kit journals every interaction in a format that can be replayed: the model version, the full context, the tool calls made, and the responses received. These records are hash-chained — each entry includes the hash of the previous entry — so the chain cannot be modified without invalidating everything downstream of the edit. Provenance is not a log you add at the end. It is a property of the interaction design from the start.
+
+## Competing-incentive verification
+
+The most reliable verification strategy I know of is adversarial: have a second agent, with different system context and explicitly different incentives, audit the first agent's output before it executes.
+
+The verifier is not trying to help the author. It is trying to find holes — places where the output violates schema, where a configuration change would open a security gap, where the logic is correct but the intent is ambiguous. Because the verifier's context is sourced from outside the author's repository, it cannot be fooled by a corrupt source that also corrupts the verifier.
+
+This pattern — author/verifier with competing incentives — is what I run at PayPal for agentic code review gates. The author agent proposes. The verifier audits. A human sees a recommendation, not a raw model output. The tripling of throughput we see is not because the agents write code faster; it is because the feedback loop on correctness is tighter, and we spend less time on rework.
+
+## Why you need the kit before you need more agents
+
+The temptation is to add agents first and governance later. The problem is that governance shapes what the agents can safely do. An agentic system built without a budget cap will spend without bound. One built without injection detection will be compromised by a sufficiently creative prompt. One without provenance journaling will be un-debuggable when something goes wrong.
+
+Build the kit first. Then the agents you add on top of it are software — verifiable, auditable, deployable in a regulated environment. Without the kit, they are demos.`,
     },
     {
       id: "why-app-kit-agentic-era",
@@ -300,6 +382,51 @@ window.SITE_DATA = {
       date: "2026-06-10",
       read: "10 min",
       summary: "When agents write most of the code, the scarce resource is consistency, not keystrokes. An app-kit gives humans and agents one set of paved roads: typed design tokens, a component library, a loopback/app contract, a single data layer, and an MCP surface so agents discover the kit instead of reinventing it. The kit is what keeps a hundred agent-generated screens from looking like a hundred different apps.",
+      body: `## Keystrokes are no longer the bottleneck
+
+For most of software engineering history, the binding constraint on output was how fast a human could write code. Every productivity tool — IDEs, snippets, frameworks, generators — attacked the same problem: reduce the number of keystrokes between intent and working software.
+
+Agentic coding dissolves that constraint almost completely. A well-prompted agent writes a thousand lines of plausible code faster than any human. The bottleneck shifts: now the scarce resource is **consistency**. When a hundred agent-generated screens can each express a slightly different visual language, component contract, or data shape, you don't have a product — you have a museum of adjacent implementation choices.
+
+An app-kit is the answer to that specific problem. It gives humans and agents one set of paved roads.
+
+## The CUE design-token pipeline
+
+app-kit's design system is expressed in CUE — a typed configuration language that validates its own constraints at definition time. The token definitions flow through a pipeline that compiles them into three simultaneous targets: CSS custom properties for the browser layer, a DTCG-format JSON bundle for design tools, and Go constants for server-side rendering.
+
+The key property here is **single source of truth**. When the accent color changes, it changes in one place — the CUE definition — and the pipeline propagates the change everywhere. An agent generating a new component doesn't need to know the current accent hex code; it reads from the token vocabulary, which is always correct because it can't drift from itself.
+
+This matters especially for agentic code generation. Agents that work without typed token contracts tend to hardcode colors, reach into CSS files directly, or make up values that look plausible. A typed token vocabulary with an MCP surface makes the right choice the easy choice: the agent queries the kit for <code>--color-accent</code> and gets the current value, not the value from some document it was trained on.
+
+## Pure-Go visualization, no Node dependency
+
+One of the deliberate constraints in app-kit is the elimination of Node.js from any critical path. The visualization layer — charts, graphs, SVG-based data displays — is implemented in pure Go, generating SVG markup server-side with no JavaScript dependency for the base rendering.
+
+This is not an ideological stance against JavaScript. It is a practical stance against supply chain complexity. A pure-Go SVG visualization library has one build toolchain, one language ecosystem, and one set of CVE exposure. It deploys as a single binary. It runs in environments where Node is not available — Lambda functions, embedded edge workers, air-gapped build pipelines.
+
+When an agent generates a data visualization, it calls into the Go library and gets an SVG it can embed. There is no webpack configuration to get wrong, no npm audit to run, no Node version to pin.
+
+## The MCP component server
+
+The most important surface in app-kit for agentic use is the MCP component server. It exposes the component library — every card, button, form, layout primitive, and page shell — through a Model Context Protocol interface that agents can query.
+
+An agent building a new screen doesn't browse source files or guess at component names. It sends a query to the MCP server: <code>list_components</code>, <code>get_component_by_name("DataCard")</code>, <code>get_component_preview</code>. The server responds with the component's interface, its expected props, and a rendered example. The agent then composes from the vocabulary it discovers, not from the vocabulary it imagines.
+
+The consequence is measurable: screens generated through the MCP surface look and behave consistently because they share components with every other screen in the product. The divergence problem — a hundred agents producing a hundred visual languages — is structurally prevented rather than reviewed away.
+
+## The loopback/app contract
+
+Every app built on app-kit has a defined contract for how the frontend and the backend communicate in development and in production. In development, that contract is satisfied over a local loopback — the same Go server that handles production traffic also handles local development, with no proxy, no mock layer, no external dev server.
+
+This matters for agents because it means the environment an agent develops in is structurally identical to the environment that will run in production. There is no "it works locally" failure mode caused by a difference between the dev proxy and the production router. The seam between local and production is an adapter swap, not an environment difference.
+
+## What the kit actually prevents
+
+Without an app-kit, agentic coding produces inconsistency at scale. Every agent makes locally reasonable choices that compound into global chaos: different button styles, different form validation patterns, different error state representations, different data fetching idioms. Human reviewers spend their time on visual inconsistency instead of logic correctness.
+
+With an app-kit, the agents have one vocabulary, one design language, and one way to compose screens. Human reviewers look at whether the agent used the right component for the job — not whether it invented a new component that looks almost like the right one.
+
+The kit is not about constraining agents. It is about directing their creativity to the layer that matters: the problem being solved, not the infrastructure for solving it.`,
     },
     {
       id: "hexagonal-agentic-engineering",
@@ -309,6 +436,63 @@ window.SITE_DATA = {
       date: "2026-06-08",
       read: "9 min",
       summary: "Ports-and-adapters gives agents a small, well-typed contract to code against and a domain core they can't accidentally couple to a database or a cloud. The same governed-agent core then runs locally over loopback and in AWS Lambda with nothing changed but the adapters — and every adapter boundary is a natural seam for replay tests and verification. Hexagonal design turns 'the agent rewrote half the app' into 'the agent swapped one adapter.'",
+      body: `## The coupling problem in agentic code generation
+
+When an agent writes code without architectural constraints, it tends to couple everything to everything. Database calls appear in route handlers. Business logic appears in database models. AWS SDK calls appear in what was supposed to be a pure computation function. This isn't a failure of the model's intelligence — it is a consequence of asking the model to make local decisions without a global structural rule.
+
+The coupling that results is not just aesthetically displeasing. It is specifically hostile to the operations that agentic engineering depends on: replay testing, verification, adapter swaps, and deterministic re-execution. A system where the domain logic is fused to the delivery mechanism cannot be replayed in isolation. It cannot be verified without its full infrastructure dependency tree. It cannot be tested without a real database.
+
+Hexagonal architecture — ports and adapters — solves this problem structurally, not through discipline.
+
+## Domain core and port definitions
+
+The center of a hexagonal system is the domain core: pure business logic, expressed in the language's type system, with no imports from infrastructure packages. In Go, this means the core package has no AWS SDK imports, no database drivers, no HTTP client calls. It defines **ports** — interfaces that describe what the core needs from the outside world.
+
+~~~
+type AgentRepository interface {
+    Store(ctx context.Context, run AgentRun) error
+    Load(ctx context.Context, id RunID) (AgentRun, error)
+}
+
+type GovernancePolicy interface {
+    Evaluate(ctx context.Context, call ToolCall) Decision
+}
+~~~
+
+These interfaces compile and test without any infrastructure present. An agent given this port definition has a precise, bounded contract to implement adapters against. It cannot accidentally couple the domain to DynamoDB because DynamoDB is not imported in the domain package.
+
+## Adapters as the only moving part
+
+Adapters implement the ports. A <code>DynamoAgentRepository</code> implements <code>AgentRepository</code> using DynamoDB. A <code>LocalAgentRepository</code> implements the same interface using an in-memory map. A <code>LambdaGovernancePolicy</code> calls an AWS Lambda function. A <code>LoopbackGovernancePolicy</code> makes a local HTTP call to the same process.
+
+The domain core is unchanged across all of these. The same governed-agent loop that runs in production Lambda runs locally over loopback — the only difference is which adapter is wired at startup. In practice, this means:
+
+- Local development has zero AWS cost and zero AWS dependency
+- Integration tests run against local adapters with full domain coverage
+- Production deploys swap in the cloud adapters with no domain code changes
+- An agent developing a new feature can work entirely against the local adapter and be confident the domain logic will behave identically in production
+
+## Adapter boundaries as replay and verification seams
+
+Every adapter boundary is a natural seam for replay testing. Because adapters are injected through interfaces, they can be replaced with recording adapters that capture interactions — and replaying adapters that replay them.
+
+In practice, this is how I test governed-agent interactions: run the real interaction once, record every domain call at the adapter boundary, then replay the recording in CI to verify that the same inputs produce the same outputs without touching any real infrastructure. This is exact replay determinism, and it is structurally free in a hexagonal architecture. In a system where domain logic is coupled to infrastructure, achieving the same property requires mocking at the SDK level, which is fragile and expensive to maintain.
+
+Verification fits the same pattern. A verifier agent that receives an <code>AgentRun</code> from the repository adapter is working with the same typed domain object that the author agent produced. The verification logic can run against the local adapter, against a production snapshot, or against a replayed recording. The seam is always in the same place.
+
+## What agents can and cannot touch
+
+One of the underappreciated benefits of hexagonal architecture for agentic engineering is the clarity it provides about scope. When an agent is asked to add a new feature, the question "what files should I touch?" has a clear structural answer: if the feature is domain logic, it lives in the core; if it is delivery, it lives in an adapter; if it bridges them, it defines a new port.
+
+An agent that follows this rule cannot accidentally rewrite the HTTP router while trying to fix a business logic bug. The two concerns live in different packages with no import path connecting them. The worst an agent can do when asked to change domain behavior is change the domain package and the tests that cover it — which is exactly the scope that should change.
+
+This turns "the agent rewrote half the app" into "the agent swapped one adapter and added a port method." The blast radius is bounded by the architecture, not by the agent's judgment about what is safe to touch.
+
+## The Go choice
+
+Hexagonal architecture works in any language, but Go makes it unusually clean. Interfaces are structural, not declared — any type that implements the methods satisfies the interface without needing to import it. This means adapters have zero import-coupling to the domain; the domain defines the interface, adapters implement it, and the compiler verifies the match at build time.
+
+For agentic code generation, Go's explicit interfaces and lack of magic make generated code easier to verify: if it compiles, the adapter contract is satisfied. There is no duck-typing ambiguity, no runtime interface discovery, no framework reflection. The type system is the governance layer for structural correctness.`,
     },
     {
       id: "cue-for-agentic-engineering",
@@ -318,6 +502,64 @@ window.SITE_DATA = {
       date: "2026-06-05",
       read: "12 min",
       summary: "Agents are far more reliable when they emit structured data than freeform prose. CUE gives you one typed schema that validates that data, unifies configuration, and compiles to JSON, YAML, or Go — so drift between what the schema says and what the agent produced becomes a build failure instead of a production incident. It is the single source of truth that makes agent output deterministic and defensible.",
+      body: `## The freeform prose problem
+
+The cheapest way to get an agent to produce structured output is to ask it nicely in the system prompt: "respond with JSON in this shape." The success rate is high enough to feel reliable. Then you hit a production edge case — a long response that trips the context window, a schema field the model found ambiguous, a tool call that returned an unexpected value — and the JSON is malformed, or the shape is subtly wrong, or the model silently dropped a required field.
+
+Asking nicely is not a schema. A schema is a constraint that makes the wrong shape impossible to produce — or at least impossible to pass without being caught.
+
+CUE is that constraint. It is a typed configuration language whose validation logic is expressed in the same syntax as the data it validates. When an agent's output passes CUE evaluation, the schema says so mechanically, not probabilistically. When it fails, the error is precise, actionable, and available before the output reaches any system that would act on it.
+
+## CUE as contract between agent and system
+
+In agentic-kit and app-kit, CUE schemas serve as the contract between what an agent is allowed to produce and what downstream systems will accept. The schema is defined once, in a <code>.cue</code> file that is version-controlled alongside the code it governs. Any output the agent produces is evaluated against it before use.
+
+The evaluation is not a JSON Schema validation pass (though CUE can export JSON Schema). It is a type unification: CUE's evaluation model treats the schema and the data as two values being merged, and produces either a unified result or a type error. This means constraints compose — you can layer a base schema, a feature-specific schema, and an environment-specific override, and CUE will evaluate all of them simultaneously and report conflicts precisely.
+
+For agent output, this matters because agents produce outputs that satisfy multiple overlapping constraints: the tool call schema, the governance policy, the application domain contract, and the environment configuration. CUE handles all of these in one evaluation pass. A Python validator chain handles them sequentially, in an order that may hide conflicts.
+
+## Unifying configuration: one schema, three targets
+
+The design token pipeline in app-kit illustrates CUE's most practical property: a single schema definition that compiles to multiple target formats simultaneously.
+
+The token schema is defined in CUE. A <code>cue export</code> command with the appropriate mappings produces:
+
+- **CSS custom properties** for the browser layer (<code>--color-accent: #c084fc;</code>)
+- **DTCG-format JSON** for design tooling
+- **Go constants** for server-side rendering and Go clients
+
+All three are derived from the same source. When the schema changes, all three change in sync. An agent generating a new component queries the CSS layer. A Go backend reads constants from the generated package. A design tool reads the DTCG bundle. None of them can drift from the others because they share a common origin that is enforced at build time.
+
+**Drift = build failure** is the key property. If the CSS and the Go constants diverge, the build fails before anything is deployed. This is not something a code review or a linter can reliably catch — it requires a mechanical check that runs on every change.
+
+## CUE as agent output validator
+
+The most direct use of CUE in an agentic system is as the output validator in the governance loop. After the model turn produces a tool call or a structured response, before the endpoint guard allows dispatch, the output is evaluated against the CUE schema for that tool.
+
+A tool call that would write a Kubernetes manifest passes CUE evaluation for the manifest schema. If the agent produced a <code>Deployment</code> with a missing <code>selector</code>, the evaluation fails with a specific field-level error. The call does not dispatch. The agent receives the error and can attempt correction.
+
+This changes the failure mode from "the agent produced a subtly wrong manifest that deployed successfully and caused a production incident six days later" to "the agent produced a wrong manifest and got an immediate, specific error that it corrected on the next turn." The first failure mode is expensive. The second is a normal part of the agentic loop.
+
+## Compiling to Go: type safety across the boundary
+
+One of CUE's underused features is its ability to generate Go struct definitions from a CUE schema. In a Go-backed agentic system, this means the same schema that validates agent output also defines the Go types that the domain core works with.
+
+When the schema changes, <code>cue generate</code> produces updated Go types. If the domain code uses a field that the schema removed, the Go compiler fails. The schema and the implementation are mechanically coupled — they cannot drift because drift is a compile error.
+
+For agentic engineering, this closes the last gap in the type safety chain: the model produces JSON that satisfies the CUE schema, the CUE schema generates the Go types, and the Go compiler verifies that the domain logic handles those types correctly. The schema is not documentation. It is the load-bearing constraint that makes the system defensible.
+
+## CUE's limitations and where it earns its complexity
+
+CUE has a learning curve. Its unification model is not immediately intuitive for engineers coming from JSON Schema or YAML. The toolchain is Go-based and has opinions about module layout. Error messages can be dense.
+
+These are real costs. They are worth paying when:
+
+- You have agent output that must satisfy multiple overlapping constraints
+- You have configuration that must compile to multiple target formats without drift
+- You need a build-time guarantee that schema and implementation agree
+- You are operating in a regulated environment where "the model said so" is not a sufficient audit trail
+
+If you only need one of these properties, a lighter tool may suffice. If you need all of them — and in a serious agentic engineering platform you will — CUE is the right backbone, not because it is the most ergonomic choice, but because it is the one that makes the wrong outputs structurally impossible rather than merely unlikely.`,
     },
     {
       id: "finops-event-driven",
@@ -326,6 +568,72 @@ window.SITE_DATA = {
       date: "2026-01-14",
       read: "11 min",
       summary: "Non-prod environments that spin up on first PR comment and tear down on idle. EventBridge rules, tag-driven right-sizing, and the dashboards that prove it.",
+      body: `## The non-prod spend problem nobody measures
+
+Cloud cost optimization discussions tend to focus on production: reserved instances, savings plans, spot fleets, rightsizing running workloads. These are real levers. They are also the hardest levers to pull, because production changes carry reliability risk and require change management overhead that slows everything down.
+
+Non-production environments are a different story. They are idle most of the time — nights, weekends, the three hours between a deploy and the next review. They are often over-provisioned because nobody wants to be the person who made the dev environment too small. And they rarely have cost accountability because the teams that run them are measured on delivery, not on spend.
+
+At multiple organizations, I've seen non-prod account for 60–75% of total cloud spend. That is not a misconfiguration. It is the predictable consequence of treating non-prod infrastructure as a permanent fixture rather than an on-demand resource.
+
+The event-driven teardown and spin-up pattern changes that accounting directly.
+
+## The architecture: EventBridge as the orchestration layer
+
+The core of the pattern is simple: non-prod environments are not always-on resources. They exist when something needs them, and they don't when nothing does.
+
+AWS EventBridge provides the event backbone. Three categories of events drive the automation:
+
+**PR lifecycle events.** A GitHub webhook (delivered to an EventBridge partner bus) fires when a pull request is opened, updated, or closed. On open or update, a Step Functions workflow provisions the environment — or confirms it is already running. On close or merge, the same workflow begins the teardown sequence: drain connections, snapshot state if needed, terminate instances.
+
+**Idle detection events.** CloudWatch metrics on ECS task CPU, RDS connection count, and ALB request rate feed custom EventBridge rules. When all three metrics fall below threshold for a configurable window (typically 45 minutes), an idle-detected event fires and the teardown workflow runs. The environment can be re-created on the next PR open or manual trigger.
+
+**Schedule events.** For environments that don't use PR-driven lifecycle (shared integration environments, QA environments with unpredictable use patterns), a scheduled EventBridge rule tears down at end-of-business and spins up before business hours. This is the least sophisticated option and the most reliable — even without perfect idle detection, you don't pay for environments overnight.
+
+## Tag-driven right-sizing
+
+Provisioning from scratch on every PR open is expensive if every environment is sized for peak production load. Tag-driven right-sizing addresses this.
+
+Every non-prod resource is tagged with an <code>env-tier</code> value: <code>dev</code>, <code>integration</code>, or <code>staging</code>. The provisioning workflow reads this tag and selects a sizing profile — instance types, ECS task memory, RDS instance class — appropriate for the tier. A <code>dev</code> environment gets 20% of the compute resources of a <code>staging</code> environment.
+
+The sizing profiles are defined in a central SSM Parameter Store path and referenced by all provisioning templates. Changing the <code>dev</code> tier profile changes every dev environment on its next provision cycle. No template updates, no per-environment configuration drift.
+
+Right-sizing accounts for a meaningful portion of the total savings on its own. But the larger impact comes from eliminating the idle hours entirely — an on-demand dev environment that runs four hours a day and is correctly-sized is where the 70%+ number comes from.
+
+## Cost attribution that actually works
+
+The prerequisite for any FinOps program is knowing what you're spending and on what. AWS Cost Explorer is the tool, but it is only as useful as your tagging discipline.
+
+The tagging schema I run everywhere has four required tags on every resource:
+
+- <code>team</code> — the team that owns the resource
+- <code>environment</code> — dev, integration, staging, or prod
+- <code>service</code> — the service or workload name
+- <code>cost-center</code> — the internal cost center for chargeback
+
+These four tags, enforced through AWS Config rules and OPA policies on the Terraform state, produce Cost Explorer views that answer "who is spending what on which service in which environment" without any manual reconciliation.
+
+When you can see that a specific team's dev environments are running idle for 14 hours a day and representing 40% of that team's monthly bill, the conversation about implementing teardown automation becomes easy. The data makes the case.
+
+## The dashboard that drives the behavior
+
+The final piece is visibility. Event-driven teardown automation that runs silently produces savings that nobody sees and therefore nobody defends when the next "let's just leave it running" decision comes up.
+
+A FinOps dashboard — CloudWatch Dashboard with Cost Explorer API feeds — shows the current running non-prod environments and their hourly cost, environments torn down in the last 24 hours and hours saved, rolling 30-day non-prod spend versus the baseline before the pattern was implemented, and an alert when an environment has been running for more than 8 hours without PR activity.
+
+The dashboard is visible to teams and to leadership. It turns cost optimization from an invisible infrastructure concern into a concrete, visible engineering metric. Teams that see their own spend tend to care about it.
+
+## What 70%+ actually means
+
+The 70%+ non-prod spend reduction figure comes from real deployments of this pattern across multiple organizations. The range varies:
+
+- Teams with heavy weekend development activity see smaller savings, because the environments were legitimately in use.
+- Teams with strict 9-to-5 working patterns and long-lived dev environments see savings closer to the high end.
+- Organizations with globally distributed teams where "business hours" spans multiple time zones see the largest gains — idle detection catches the gap hours between shifts.
+
+The savings accrue without any change to developer workflow for teams using PR-driven lifecycle. A developer opens a PR and the environment appears. The environment disappears when the PR closes. From the developer's perspective, the environment is always there when they need it. From the platform's perspective, it was idle for 18 hours last night and the bill reflects that.
+
+That asymmetry — invisible to users, visible in spend — is what makes the pattern durable. It doesn't require behavior change. It requires infrastructure that aligns cost with actual use.`,
     },
   ],
 

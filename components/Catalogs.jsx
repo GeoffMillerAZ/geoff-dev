@@ -1,5 +1,59 @@
 /* Catalog pages: Articles, Projects, Resources */
 
+/* -------- Markdown renderer (articles) -------- */
+function renderMarkdown(md) {
+  if (!md) return null;
+  const inlineHtml = (s) =>
+    s
+      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/`([^`]+)`/g, "<code>$1</code>")
+      .replace(/\*([^*]+)\*/g, "<em>$1</em>");
+
+  // Split into blocks on blank lines
+  const lines = md.split("\n");
+  const blocks = [];
+  let current = [];
+
+  const flush = () => {
+    if (current.length) { blocks.push(current.join("\n")); current = []; }
+  };
+
+  lines.forEach(line => {
+    if (line.trim() === "") { flush(); } else { current.push(line); }
+  });
+  flush();
+
+  return blocks.map((block, i) => {
+    const firstLine = block.split("\n")[0];
+    if (firstLine.startsWith("### ")) {
+      return <h3 key={i} style={{ fontSize: 18, fontWeight: 600, letterSpacing: "-0.015em", marginTop: 32, marginBottom: 10, color: "var(--text)" }}
+        dangerouslySetInnerHTML={{ __html: inlineHtml(firstLine.slice(4)) }} />;
+    }
+    if (firstLine.startsWith("## ")) {
+      return <h2 key={i} style={{ fontSize: 22, fontWeight: 600, letterSpacing: "-0.02em", marginTop: 44, marginBottom: 12, color: "var(--text)", paddingBottom: 10, borderBottom: "1px solid var(--line)" }}
+        dangerouslySetInnerHTML={{ __html: inlineHtml(firstLine.slice(3)) }} />;
+    }
+    // Fenced code block (~~~ ... ~~~ or ``` ... ```)
+    if (block.startsWith("~~~") || block.startsWith("```")) {
+      const fence = block.startsWith("~~~") ? "~~~" : "```";
+      const re = new RegExp("^" + fence + "[^\\n]*\\n?");
+      const re2 = new RegExp("\\n?" + fence + "$");
+      const inner = block.replace(re, "").replace(re2, "");
+      return <pre key={i} style={{ background: "var(--bg-0)", border: "1px solid var(--line)", borderRadius: "var(--rad-sm)", padding: "14px 18px", overflowX: "auto", fontFamily: "var(--font-mono)", fontSize: 13, lineHeight: 1.6, margin: "18px 0", color: "var(--neon-cyan)" }}><code>{inner}</code></pre>;
+    }
+    // Bullet list
+    if (block.split("\n").every(l => l.startsWith("- "))) {
+      const items = block.split("\n").map(l => l.slice(2));
+      return <ul key={i} style={{ margin: "14px 0 14px 18px", display: "flex", flexDirection: "column", gap: 8 }}>
+        {items.map((item, j) => <li key={j} style={{ fontSize: 15, lineHeight: 1.6, color: "var(--text-dim)" }} dangerouslySetInnerHTML={{ __html: inlineHtml(item) }} />)}
+      </ul>;
+    }
+    // Paragraph
+    return <p key={i} style={{ fontSize: 15.5, lineHeight: 1.7, color: "var(--text-dim)", margin: "14px 0" }}
+      dangerouslySetInnerHTML={{ __html: inlineHtml(block) }} />;
+  });
+}
+
 const useSearchAndTags = (items, getTags, getText) => {
   const [q, setQ] = React.useState("");
   const [active, setActive] = React.useState(new Set());
@@ -28,6 +82,76 @@ const useSearchAndTags = (items, getTags, getText) => {
   return { q, setQ, active, toggle, allTags, filtered, clear: () => setActive(new Set()) };
 };
 
+/* -------- Article Detail -------- */
+const ArticleDetail = ({ article, onBack }) => {
+  React.useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [article.id]);
+  const a = article;
+  return (
+    <div className="page role-detail" style={{ maxWidth: 780 }}>
+      <button className="role-back" onClick={onBack}>
+        <Icon name="chevronLeft" size={13} />
+        Back to articles
+      </button>
+
+      <div className="role-detail-head">
+        <div className="role-detail-crumb">
+          <span>Articles</span>
+          {a.series && (
+            <>
+              <span className="sep">/</span>
+              <span>{a.series.name}</span>
+            </>
+          )}
+          {a.series && (
+            <>
+              <span className="sep">/</span>
+              <span>Part {a.series.part} of {a.series.of}</span>
+            </>
+          )}
+        </div>
+
+        {a.series && (
+          <div style={{ marginBottom: 16 }}>
+            <span className="series-pill" style={{ fontSize: 12, padding: "4px 12px" }}>
+              <Icon name="layers" size={11} />
+              {a.series.name} · Part {a.series.part} of {a.series.of}
+            </span>
+          </div>
+        )}
+
+        <h1 className="role-detail-title" style={{ fontSize: 36, lineHeight: 1.12 }}>{a.title}</h1>
+
+        <div className="role-detail-company">
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--text-mute)" }}>{fmtDate(a.date)}</span>
+          <span className="sep">·</span>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--text-mute)" }}>{a.read} read</span>
+        </div>
+
+        <p className="role-detail-tagline">{a.summary}</p>
+
+        <div className="role-detail-scope">
+          {(a.tags || []).map(t => <span key={t} className="scope-chip">#{t}</span>)}
+        </div>
+      </div>
+
+      <div style={{ marginTop: 8 }}>
+        {a.body ? renderMarkdown(a.body) : (
+          <p style={{ color: "var(--text-mute)", fontStyle: "italic" }}>Full article coming soon.</p>
+        )}
+      </div>
+
+      <div style={{ marginTop: 56, paddingTop: 28, borderTop: "1px solid var(--line)", display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+        <button className="btn" onClick={onBack}>
+          <Icon name="chevronLeft" size={13} />Back to articles
+        </button>
+        <button className="btn btn-primary" onClick={() => window.ROUTE_SET?.("chat")}>
+          <Icon name="sparkles" size={13} />Ask the JD-chat about this
+        </button>
+      </div>
+    </div>
+  );
+};
+
 /* -------- Articles -------- */
 const ArticlesPage = () => {
   const D = window.SITE_DATA;
@@ -37,7 +161,20 @@ const ArticlesPage = () => {
     a => a.title + " " + a.summary + " " + a.tags.join(" ")
   );
 
+  const [openId, setOpenId] = React.useState(() => {
+    // Check DEEP_LINK first (set by router.onChange on re-navigation)
+    const dl = window.DEEP_LINK;
+    if (dl?.articleId) { window.DEEP_LINK = null; return dl.articleId; }
+    // Fall back to reading URL params directly for initial hard load
+    try {
+      const p = new URLSearchParams(window.location.search);
+      if (p.has("article")) return p.get("article");
+    } catch (_) {}
+    return null;
+  });
+
   // Series sidebar: show series index for whichever series is visible first
+  // (hooks must all be called before any early return)
   const seriesByName = React.useMemo(() => {
     const m = {};
     D.articles.forEach(a => { if (a.series) (m[a.series.name] ||= []).push(a); });
@@ -49,6 +186,11 @@ const ArticlesPage = () => {
     const first = filtered.find(a => a.series);
     return first ? first.series.name : null;
   }, [filtered]);
+
+  if (openId) {
+    const a = D.articles.find(x => x.id === openId);
+    if (a) return <ArticleDetail article={a} onBack={() => setOpenId(null)} />;
+  }
 
   return (
     <div className="page" style={{ maxWidth: 1180 }}>
@@ -84,7 +226,8 @@ const ArticlesPage = () => {
       <div style={{ display: "grid", gridTemplateColumns: seriesInView ? "1fr 260px" : "1fr", gap: 32, alignItems: "start" }}>
         <div>
           {filtered.map(a => (
-            <a key={a.id} className="article-row">
+            <button key={a.id} type="button" className="article-row" onClick={() => setOpenId(a.id)}
+              style={{ appearance: "none", font: "inherit", color: "inherit", textAlign: "left", cursor: "pointer", width: "100%", background: "none", border: "none", borderBottom: "1px solid var(--line-soft)" }}>
               <div className="date">{fmtDate(a.date)}</div>
               <div>
                 {a.series && (
@@ -103,7 +246,7 @@ const ArticlesPage = () => {
                 {a.read}<br/>
                 <span style={{ color: "var(--text-faint)" }}>→</span>
               </div>
-            </a>
+            </button>
           ))}
           {filtered.length === 0 && (
             <div style={{ padding: 60, textAlign: "center", color: "var(--text-mute)" }}>No articles match.</div>
@@ -117,23 +260,26 @@ const ArticlesPage = () => {
               <div style={{ fontWeight: 600, marginBottom: 12 }}>{seriesInView}</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                 {seriesByName[seriesInView].map(a => {
-                  const active = filtered[0]?.id === a.id;
+                  const isActive = filtered[0]?.id === a.id;
                   return (
-                    <div key={a.id} style={{
+                    <button key={a.id} type="button" onClick={() => setOpenId(a.id)} style={{
                       display: "grid", gridTemplateColumns: "auto 1fr", gap: 10,
                       padding: "8px 10px",
                       borderRadius: "var(--rad-sm)",
-                      background: active ? "var(--bg-2)" : "transparent",
-                      borderLeft: "2px solid " + (active ? "var(--accent)" : "transparent"),
+                      background: isActive ? "var(--bg-2)" : "transparent",
+                      borderLeft: "2px solid " + (isActive ? "var(--accent)" : "transparent"),
                       cursor: "pointer",
+                      appearance: "none", font: "inherit", color: "inherit", textAlign: "left", border: "none",
+                      borderLeft: "2px solid " + (isActive ? "var(--accent)" : "transparent"),
+                      width: "100%",
                     }}>
-                      <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: active ? "var(--accent)" : "var(--text-faint)" }}>
+                      <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: isActive ? "var(--accent)" : "var(--text-faint)" }}>
                         {String(a.series.part).padStart(2, "0")}
                       </span>
-                      <span style={{ fontSize: 13, color: active ? "var(--text)" : "var(--text-dim)", lineHeight: 1.4 }}>
+                      <span style={{ fontSize: 13, color: isActive ? "var(--text)" : "var(--text-dim)", lineHeight: 1.4 }}>
                         {a.title}
                       </span>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
