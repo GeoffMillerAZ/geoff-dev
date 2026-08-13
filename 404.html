@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-aesthetic="synthwave" data-accent="pink" data-density="comfortable" data-grid="on">
+<head>
+  <meta charset="utf-8" />
+  <title>geoffmiller.cloud — Principal Cloud × Agentic AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <base href="/" />
+
+  <!-- ── Discovery / social preview ─────────────────────────────────────────
+       Every value below is copied from spa/data.js (window.SITE_DATA). data.js
+       is loaded at runtime, so nothing here can read it — keep the two in sync
+       by hand if data.js changes.                                          -->
+  <meta name="description" content="Principal Cloud Architect × Agentic AI Engineer. Infrastructure Director with 12 years designing and operating cloud platforms at regulated FinTechs (20 years in IT)." />
+  <meta name="author" content="Geoffrey Miller" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#1a1423" />
+  <link rel="canonical" href="https://geoffmiller.cloud/" />
+
+  <!-- Tab and home-screen icon. Reuses the existing 512x512 portrait rather
+       than inventing an asset; browsers downscale it fine. A purpose-drawn
+       mark at 32/180px would be sharper if one ever exists. Without these the
+       tab shows a blank page glyph and every load 404s on /favicon.ico. -->
+  <link rel="icon" type="image/png" href="/assets/geoff.png" />
+  <link rel="apple-touch-icon" href="/assets/geoff.png" />
+
+  <meta property="og:type" content="profile" />
+  <meta property="og:site_name" content="geoffmiller.cloud" />
+  <meta property="og:title" content="Geoffrey Miller — Principal Cloud Architect × Agentic AI Engineer" />
+  <meta property="og:description" content="Principal Cloud Architect × Agentic AI Engineer. Infrastructure Director with 12 years designing and operating cloud platforms at regulated FinTechs (20 years in IT)." />
+  <meta property="og:url" content="https://geoffmiller.cloud/" />
+  <meta property="og:image" content="https://geoffmiller.cloud/assets/geoff.png" />
+  <meta property="og:image:width" content="512" />
+  <meta property="og:image:height" content="512" />
+  <meta property="og:image:alt" content="Geoffrey Miller" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="profile:first_name" content="Geoffrey" />
+  <meta property="profile:last_name" content="Miller" />
+
+  <!-- `summary`, not `summary_large_image`: geoff.png is a square 512x512
+       portrait, and the large-image card centre-crops to roughly 2:1, which
+       would slice the top and bottom off a face. Switch to large-image only
+       alongside a purpose-made ~1200x630 asset. -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Geoffrey Miller — Principal Cloud Architect × Agentic AI Engineer" />
+  <meta name="twitter:description" content="Principal Cloud Architect × Agentic AI Engineer. Infrastructure Director with 12 years designing and operating cloud platforms at regulated FinTechs (20 years in IT)." />
+  <meta name="twitter:image" content="https://geoffmiller.cloud/assets/geoff.png" />
+  <meta name="twitter:image:alt" content="Geoffrey Miller" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Geoffrey Miller",
+    "jobTitle": "Principal Cloud Architect × Agentic AI Engineer",
+    "url": "https://geoffmiller.cloud/",
+    "image": "https://geoffmiller.cloud/assets/geoff.png",
+    "sameAs": [
+      "https://github.com/GeoffMillerAZ",
+      "https://linkedin.com/in/geoff-e-miller"
+    ],
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Phoenix",
+      "addressRegion": "AZ"
+    },
+    "alumniOf": {
+      "@type": "EducationalOrganization",
+      "name": "Northern Illinois University"
+    },
+    "knowsAbout": [
+      "Agentic AI & MCP",
+      "MCP Servers",
+      "Multi-Agent Orchestration",
+      "Agentic Verification",
+      "Platform & Kubernetes",
+      "Kubernetes",
+      "Amazon EKS",
+      "Argo CD",
+      "GitOps",
+      "IaC & Policy-as-Code",
+      "Terraform",
+      "Pulumi",
+      "Crossplane",
+      "OPA / Gatekeeper",
+      "AWS Services",
+      "Lambda",
+      "Transit Gateway",
+      "FinOps & SRE",
+      "Right-sizing Automation",
+      "SLI / SLO",
+      "Incident Response",
+      "OpenTelemetry",
+      "Security & Compliance",
+      "PCI-DSS",
+      "SOC 2",
+      "FFIEC",
+      "Zero Trust",
+      "Leadership",
+      "Cloud Strategy",
+      "Stakeholder Management",
+      "Team Building"
+    ],
+    "description": "Infrastructure Director and Principal Cloud Architect with 12 years designing and operating cloud platforms at regulated FinTechs (20 years in IT). Builds high-performing platform teams, manages stakeholders across business and technology, and ships simple repeatable engineering patterns that cut spend 30%+ while tightening compliance."
+  }
+  </script>
+
+  <!-- One HTML file serves every route (404.html is a byte-copy of this file),
+       so the static canonical above is only correct for "/". On a hard load of
+       a deep route, point it at that route instead. The origin is pinned to
+       geoffmiller.cloud so the dev mirror never competes for the live URL.
+       Initial load only — client-side navigation does not re-run this. -->
+  <!-- Per-route canonical. Every route serves this same file, so a static
+       canonical would have all 8 sitemap URLs declaring "/" as their canonical
+       and Google would drop 7 of them. This rewrites canonical + og:url to the
+       real path on a hard load. The origin is pinned to geoffmiller.cloud on
+       purpose: dev.geoffmiller.cloud serves an identical bundle, and pinning
+       makes the dev mirror point at live rather than compete with it.
+       Initial load only — client-side navigation does not re-run it, which is
+       fine because crawlers arrive by hard load. Delete this and you must also
+       trim the sitemap to just "/". -->
+  <script>
+    (function () {
+      var path = location.pathname.replace(/\/+$/, "");
+      if (!path) return;
+      var url = "https://geoffmiller.cloud" + path;
+      var link = document.querySelector('link[rel="canonical"]');
+      if (link) link.setAttribute("href", url);
+      var og = document.querySelector('meta[property="og:url"]');
+      if (og) og.setAttribute("content", url);
+    })();
+  </script>
+  <!-- ───────────────────────────────────────────────────────────────────── -->
+
+  <link rel="stylesheet" href="styles.css?v=260c73ca36" />
+  <link rel="stylesheet" href="components.css?v=260c73ca36" />
+  <link rel="stylesheet" href="deep.css?v=260c73ca36" />
+  <link rel="stylesheet" href="vizkit.css?v=260c73ca36" />
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1" crossorigin="anonymous"></script>
+  <script src="data.js?v=260c73ca36"></script>
+  <!-- The radar sidecar. Separate from data.js on purpose: that file is 5,800
+       lines of résumé and this one churns every time a verdict is re-examined,
+       which would make every diff on this site unreadable. Generated by
+       `task radar:render` from resume-core/radar/*.cue; unratified records are
+       dropped in Go before it is written, so they are absent from this file
+       rather than hidden inside it. -->
+  <script src="radar.js?v=260c73ca36"></script>
+  <script src="router.js?v=260c73ca36"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="components/Icon.js?v=260c73ca36"></script>
+  <script src="components/Viz.js?v=260c73ca36"></script>
+  <script src="components/VizKit.js?v=260c73ca36"></script>
+  <!-- Round two of the kit: cycle, anatomy, fork. AFTER VizKit.js and not
+       merely beside it — it reaches vkUseSteps, VkSay, VkSeg, vkUsable and the
+       reduced-motion hook as bare identifiers out of the shared global lexical
+       scope, and VizKit.js is what puts them there. A second file rather than
+       1,300 more lines in the first, so a kit change and a round-two change are
+       two readable diffs instead of one. -->
+  <script src="components/VizKit2.js?v=260c73ca36"></script>
+  <script src="components/Charts.js?v=260c73ca36"></script>
+  <!-- fathom's four page-specific figures. AFTER Viz.js for two reasons: the
+       data records reach these by name through NamedDiagram (a window lookup at
+       render time), and the components reach `useNarrow` and `DiagramExplorer`
+       as bare identifiers out of the shared global lexical scope, exactly as
+       RadarPlot.js does. -->
+  <script src="components/FathomViz.js?v=260c73ca36"></script>
+  <script src="components/Shell.js?v=260c73ca36"></script>
+  <script src="components/ChatAgent.js?v=260c73ca36"></script>
+  <script src="components/ChatRail.js?v=260c73ca36"></script>
+  <script src="components/CommandPalette.js?v=260c73ca36"></script>
+  <script src="components/ChatPage.js?v=260c73ca36"></script>
+  <!-- Org logos. BEFORE ResumePage.js, its only consumer today — the role cards
+       and the Education seal. OrgLogo.js is an IIFE that publishes
+       window.OrgLogo / window.orgPrimary and has no eval-time dependency of its
+       own: its monogram fallback reaches window.OrgMark (Recommendations.js,
+       below) at RENDER time, by which point every tag on this page has run. The
+       tag would therefore work anywhere ahead of Boot.js; it sits against its
+       consumer because that is the dependency a reader needs to see. -->
+  <script src="components/OrgLogo.js?v=260c73ca36"></script>
+  <script src="components/ResumePage.js?v=260c73ca36"></script>
+  <script src="components/Deep.js?v=260c73ca36"></script>
+  <script src="components/Catalogs.js?v=260c73ca36"></script>
+  <script src="components/Achievements.js?v=260c73ca36"></script>
+  <script src="components/Recommendations.js?v=260c73ca36"></script>
+  <!-- Specializations. The shared shell MUST load before the capability pages:
+       each of those aliases window.SpecPageShell inside its own IIFE at
+       script-eval time. All of them are registered here even while the section's
+       feature flag is off, and even before every page file exists — a missing
+       child degrades to the scaffold page rather than breaking the route.
+       The FinOps page now has THREE companion files — SpecFinOpsUtil.js (the
+       sprint ledger and the schedule reductio), SpecFinOpsEnv.js (the hydration
+       threshold) and SpecFinOpsRate.js (the two rate visuals) — split out so
+       several authors could work on that one page at once. Each aliases
+       window.PlaceholderBadge in its own IIFE, so all three must come after
+       Specializations.js; the page late-binds every one of their globals BY NAME
+       out of the record, so relative order among the four is documentary only
+       and they are listed in reading order.
+       SpecCICD.js and SpecGovernance.js are registered ahead of their authors:
+       until those files land the browser logs a 404 for each and the route
+       renders SpecPagePending, which is the designed degradation and is why
+       these tags are added by the scaffolding rather than by the page builder.
+       The build is unaffected either way — jsxbuild compiles whatever .jsx it
+       finds and its asset digest skips everything under components/. -->
+  <script src="components/Specializations.js?v=260c73ca36"></script>
+  <script src="components/SpecFinOpsUtil.js?v=260c73ca36"></script>
+  <script src="components/SpecFinOpsEnv.js?v=260c73ca36"></script>
+  <script src="components/SpecFinOpsRate.js?v=260c73ca36"></script>
+  <script src="components/SpecFinOps.js?v=260c73ca36"></script>
+  <!-- The DevX page's two companion files. BEFORE SpecDevX.js, matching the
+       SpecFinOps* companions above: the page looks window.LoopWaste,
+       window.ToolchainFloor and window.LockCoherence up at render time, so
+       either order works, but companion-before-page is this file's own
+       convention. SpecDevXLoop.js is section 04's loop-waste visual and its
+       source ledger; SpecDevXTool.js is sections 05 and 06 — the toolchain
+       floor and the lockfile strips — which share one CSS block and one
+       ledger and therefore one file. -->
+  <script src="components/SpecDevXLoop.js?v=260c73ca36"></script>
+  <script src="components/SpecDevXTool.js?v=260c73ca36"></script>
+  <script src="components/SpecDevX.js?v=260c73ca36"></script>
+  <script src="components/SpecAgenticGradient.js?v=260c73ca36"></script>
+  <script src="components/SpecAgentic.js?v=260c73ca36"></script>
+  <script src="components/SpecCICD.js?v=260c73ca36"></script>
+  <script src="components/SpecGovernance.js?v=260c73ca36"></script>
+  <script src="components/Radar.js?v=260c73ca36"></script>
+  <!-- The radar plot. AFTER Radar.js because RadarIndex late-binds
+       window.RadarPlot by name, and after Viz.js because it reaches `useNarrow`
+       as a bare identifier out of the shared global lexical scope. -->
+  <script src="components/RadarPlot.js?v=260c73ca36"></script>
+  <script src="components/EntityCards.js?v=260c73ca36"></script>
+  <script src="components/Extras.js?v=260c73ca36"></script>
+
+  <script src="components/Boot.js?v=260c73ca36"></script>
+</body>
+</html>

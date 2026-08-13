@@ -1,0 +1,681 @@
+/* ============================================================
+   geoffmiller.cloud — Synthwave Dusk design system
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
+
+:root {
+  /* — Synthwave Dusk (default dark) — */
+  --bg:        #1a1423;
+  --bg-1:      #241b2f;  /* panels */
+  --bg-2:      #2d2140;  /* hover */
+  --bg-3:      #3a2a52;  /* borders active */
+  --line:      #362a4d;
+  --line-soft: #2a2038;
+  /* One step stronger than --line, for floating panels, avatar rings and pill
+     borders. Referenced 27 times since long before it was declared; until
+     2026-08-07 every one of those declarations was invalid at computed-value
+     time and silently dropped — see tools/site/tokens.go. */
+  --line-strong: #4a3a66;
+  --text:      #f5f3ff;
+  --text-dim:  #b8a9d9;
+  --text-mute: #7a6b94;
+  --text-faint:#5a4d73;
+
+  /* PROVENANCE. Every published figure on this site carries a source line, and
+     that line is the element the whole design leans on. It used to paint
+     --text-faint and measured 1.92-2.67:1 — the least legible text on the page
+     it was justifying. --text-faint is not the fix: it has ~100 consumers, most
+     of them decorative hairlines and separator dots, and raising it would
+     lighten all of those to correct five text elements. --text-mute is not the
+     fix either: measured, it is 3.08-4.28:1 on the panels these lines sit on.
+     So the source line gets its own token, declared in all four palettes and
+     gated by tools/site contrast at >= 4.5:1 on --bg, --bg-1 and --bg-2.
+     5.03:1 on --bg-2 here. */
+  --text-src:  #9d8fb8;
+
+  /* Neon accents — Synthwave '84 inspired */
+  --neon-pink:    #ff7edb;  /* primary */
+  --neon-cyan:    #72f1b8;  /* success / live */
+  --neon-amber:   #fede5d;  /* warn / highlight */
+  --neon-purple:  #b893ce;
+  --neon-red:     #fe4450;
+  --neon-blue:    #36f9f6;
+
+  --accent:       var(--neon-pink);
+  --accent-soft:  color-mix(in oklab, var(--neon-pink) 18%, transparent);
+  --accent-glow:  color-mix(in oklab, var(--neon-pink) 45%, transparent);
+
+  /* Gradients */
+  --grad-sun: linear-gradient(180deg, #ff7edb 0%, #fede5d 50%, #72f1b8 100%);
+  --grad-horizon: linear-gradient(180deg, transparent 0%, rgba(255,126,219,0.08) 100%);
+
+  /* Type */
+  --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-serif: 'Instrument Serif', ui-serif, serif;
+
+  /* Density */
+  --density-mult: 1;
+  --step: calc(4px * var(--density-mult));
+  --rad-sm: 4px;
+  --rad:    6px;
+  /* --rad-md fills the gap the scale always implied and nothing ever declared;
+     --rad-full is the pill radius the chips were asking for. Both were
+     referenced (8 times between them) and undeclared, which does not fall back
+     to anything — it drops the declaration, so .facet-chip rendered square. */
+  --rad-md: 8px;
+  --rad-lg: 10px;
+  --rad-xl: 16px;
+  --rad-full: 999px;
+
+  /* Shadows / glows */
+  --glow-sm: 0 0 0 1px color-mix(in oklab, var(--accent) 25%, transparent),
+             0 0 12px -2px color-mix(in oklab, var(--accent) 40%, transparent);
+  --glow-md: 0 0 0 1px color-mix(in oklab, var(--accent) 35%, transparent),
+             0 0 24px -4px color-mix(in oklab, var(--accent) 55%, transparent),
+             0 0 60px -10px color-mix(in oklab, var(--accent) 45%, transparent);
+  --shadow-panel: 0 1px 0 rgba(255,255,255,0.03) inset,
+                  0 20px 40px -20px rgba(0,0,0,0.5);
+}
+
+/* Light mode */
+[data-theme="light"] {
+  --bg:        #fbfaff;
+  --bg-1:      #ffffff;
+  --bg-2:      #f3f0fa;
+  --bg-3:      #e8e2f5;
+  --line:      #e4dff0;
+  --line-soft: #efecf7;
+  --line-strong: #cdc4e0;
+  --text:      #1a1423;
+  --text-dim:  #4a3d63;
+  --text-mute: #7a6b94;
+  --text-faint:#a39ab8;
+  --text-src:  #6f6088;  /* 5.04:1 on --bg-2 */
+  --neon-pink: #d6399e;
+  --neon-cyan: #0ea57a;
+  --neon-amber:#c48500;
+  --accent:    #d6399e;
+  --accent-soft: color-mix(in oklab, #d6399e 12%, transparent);
+  --accent-glow: color-mix(in oklab, #d6399e 30%, transparent);
+  --shadow-panel: 0 1px 2px rgba(26,20,35,0.06),
+                  0 10px 30px -18px rgba(26,20,35,0.15);
+}
+
+/* Aesthetic: Terminal Mono */
+[data-aesthetic="terminal"] {
+  --bg: #0a0a0f;
+  --bg-1: #0f0f16;
+  --bg-2: #15151f;
+  --bg-3: #1e1e2b;
+  --line: #1a1a26;
+  --line-soft: #141420;
+  --line-strong: #2b2b3a;
+  --text: #e4e4ea;
+  --text-dim: #9d9daa;
+  --text-mute: #60606c;
+  /* This block declared no --text-faint, so under data-theme="light" it
+     inherited the LIGHT palette's #a39ab8 and painted it on a near-black
+     surface — the same class of bug the note on the outrun block below
+     describes, arriving through a missing declaration instead of an ungated
+     rule. Neutral, and fainter than --text-mute, which is what faint means. */
+  --text-faint: #4e4e5a;
+  --text-src: #8d8d9a;  /* 5.53:1 on --bg-2 */
+  --neon-pink: #72f1b8;
+  --neon-cyan: #72f1b8;
+  --accent: #72f1b8;
+  --accent-soft: color-mix(in oklab, #72f1b8 12%, transparent);
+  --accent-glow: color-mix(in oklab, #72f1b8 30%, transparent);
+}
+
+/* Aesthetic: Outrun (bolder synthwave) */
+/* An aesthetic remaps the SURFACES, so it must also remap everything that sits
+   on them. This block used to declare --bg/--bg-1/--bg-2 and the neons and stop
+   there, which was fine under the dark theme and catastrophic under the light
+   one: [data-theme="light"] sets --text to near-black #1a1423 and nothing here
+   overrode it, so the light theme's black text landed on outrun's near-black
+   #1a0f2e panel at a measured 1.02:1 — invisible, on every panel of every page,
+   not just the new ones. [data-aesthetic="terminal"] already declared its own
+   text tokens and never had the bug; this block now does the same.
+   Consequence worth knowing before editing: because both aesthetics force dark
+   surfaces regardless of theme, every light-theme override in a component MUST
+   be gated :not([data-aesthetic="terminal"]):not([data-aesthetic="outrun"]) —
+   an ungated one inverts figure and ground here. */
+[data-aesthetic="outrun"] {
+  --bg: #110a1f;
+  --bg-1: #1a0f2e;
+  --bg-2: #24163d;
+  --bg-3: #35205c;
+  --line: #2f1d52;
+  --line-soft: #241640;
+  --line-strong: #452c78;
+  --text: #f7f2ff;
+  --text-dim: #bfaee0;
+  --text-mute: #8878a6;
+  --text-faint: #61527f;
+  --text-src: #9788b4;  /* 5.17:1 on --bg-2 */
+  --accent: #ff4dcb;
+  --neon-pink: #ff4dcb;
+  --neon-cyan: #00eaff;
+  --neon-amber: #ffb13c;
+}
+
+/* The light theme remapped --neon-pink, --neon-cyan and --neon-amber and left
+   --neon-purple, --neon-blue and --neon-red at their dark values. Measured on
+   --bg-1 (#ffffff): purple 2.59:1, red 3.41:1, blue 1.31:1 — blue close to
+   invisible. They are not decorative: EntityCards paints certifications blue
+   and education purple, Recommendations cycles both through PERSON_TONES,
+   deep.css uses purple for an architecture layer and a superseded ADR, and
+   [data-accent="purple"] makes purple the SITE-WIDE accent, so a reader who
+   picks it in light mode gets a 2.59:1 accent on every button and link.
+
+   THE GATE IS LOAD-BEARING, NOT DECORATION. [data-aesthetic="terminal"] and
+   [data-aesthetic="outrun"] force DARK surfaces regardless of theme and neither
+   declares these three, so an ungated light rule would drop #0e7490 onto
+   terminal's #0f0f16 where #36f9f6 currently measures 14.58:1. Same trap the
+   outrun note above describes, from the other direction.
+
+   Values measured on #ffffff: #8a5aa5 = 5.14:1, #0e7490 = 5.36:1,
+   #c62839 = 5.58:1. They arrived here from components.css, where they had been
+   scoped to the five capability pages only; that copy is now deleted so there
+   is one definition rather than two that can drift.
+   Gated by tools/site contrast — see TestCheckContrastModelsTheCascade. */
+:root[data-theme="light"]:not([data-aesthetic="terminal"]):not([data-aesthetic="outrun"]) {
+  --neon-purple: #8a5aa5;
+  --neon-blue:   #0e7490;
+  --neon-red:    #c62839;
+}
+
+/* Accent overrides */
+[data-accent="cyan"]   { --accent: var(--neon-cyan);   --accent-soft: color-mix(in oklab, var(--neon-cyan) 18%, transparent);   --accent-glow: color-mix(in oklab, var(--neon-cyan) 45%, transparent); }
+[data-accent="amber"]  { --accent: var(--neon-amber);  --accent-soft: color-mix(in oklab, var(--neon-amber) 18%, transparent);  --accent-glow: color-mix(in oklab, var(--neon-amber) 45%, transparent); }
+[data-accent="pink"]   { --accent: var(--neon-pink);   --accent-soft: color-mix(in oklab, var(--neon-pink) 18%, transparent);   --accent-glow: color-mix(in oklab, var(--neon-pink) 45%, transparent); }
+[data-accent="purple"] { --accent: var(--neon-purple); --accent-soft: color-mix(in oklab, var(--neon-purple) 18%, transparent); --accent-glow: color-mix(in oklab, var(--neon-purple) 45%, transparent); }
+
+/* Density */
+[data-density="compact"]     { --density-mult: 0.82; }
+[data-density="comfortable"] { --density-mult: 1; }
+[data-density="spacious"]    { --density-mult: 1.2; }
+
+/* ============================================================
+   Base
+   ============================================================ */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { color-scheme: dark; }
+[data-theme="light"] html { color-scheme: light; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01","cv11";
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Subtle grid backdrop on dark */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--line-soft) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line-soft) 1px, transparent 1px);
+  background-size: 64px 64px;
+  opacity: 0.35;
+  z-index: 0;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 30%, transparent 80%);
+}
+[data-theme="light"] body::before { opacity: 0.9; }
+[data-grid="off"] body::before { display: none; }
+
+/* Horizon glow at bottom */
+body::after {
+  content: "";
+  position: fixed;
+  inset: auto 0 0 0;
+  height: 40vh;
+  pointer-events: none;
+  background: radial-gradient(ellipse 60% 100% at 50% 100%, var(--accent-soft), transparent 70%);
+  z-index: 0;
+  opacity: 0.6;
+}
+[data-theme="light"] body::after { opacity: 0.4; }
+
+::selection { background: var(--accent); color: var(--bg); }
+
+a { color: inherit; text-decoration: none; }
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--bg-3); }
+
+/* ============================================================
+   Typography primitives
+   ============================================================ */
+.mono { font-family: var(--font-mono); font-feature-settings: "zero","ss02"; }
+.serif { font-family: var(--font-serif); }
+
+h1, h2, h3, h4 {
+  font-family: var(--font-sans);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Neon text treatment for headings that opt in */
+.neon-text {
+  color: var(--text);
+  text-shadow:
+    0 0 1px var(--accent),
+    0 0 12px color-mix(in oklab, var(--accent) 50%, transparent),
+    0 0 28px color-mix(in oklab, var(--accent) 30%, transparent);
+}
+[data-theme="light"] .neon-text { text-shadow: none; color: var(--accent); }
+
+.kbd {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 2px 6px;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  color: var(--text-dim);
+  background: var(--bg-1);
+}
+
+/* Tag / pill */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  padding: 3px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text-dim);
+  background: var(--bg-1);
+  transition: all 0.15s ease;
+  cursor: default;
+  white-space: nowrap;
+}
+.tag.is-active,
+.tag:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  border-radius: var(--rad);
+  border: 1px solid var(--line);
+  background: var(--bg-1);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.btn:hover { border-color: var(--bg-3); background: var(--bg-2); }
+.btn-primary {
+  background: var(--accent);
+  color: #1a1423;
+  border-color: var(--accent);
+  font-weight: 600;
+  box-shadow: 0 0 0 0 transparent, 0 6px 20px -8px var(--accent-glow);
+}
+.btn-primary:hover {
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft), 0 8px 28px -8px var(--accent-glow);
+}
+.btn-ghost { background: transparent; border-color: transparent; color: var(--text-dim); }
+.btn-ghost:hover { color: var(--text); background: var(--bg-1); }
+
+.btn-sm { padding: 6px 10px; font-size: 12px; }
+.btn-icon { padding: 7px; }
+
+/* Panel */
+.panel {
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  border-radius: var(--rad-lg);
+  box-shadow: var(--shadow-panel);
+}
+
+/* Cards */
+.card {
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  border-radius: var(--rad-lg);
+  padding: 20px;
+  transition: all 0.18s ease;
+  position: relative;
+}
+.card:hover {
+  border-color: var(--bg-3);
+  transform: translateY(-1px);
+}
+
+/* Divider with label */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-mute);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.divider::before, .divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+/* Section label */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+}
+.eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 1px;
+  background: var(--accent);
+}
+
+/* Link underline */
+.link {
+  color: var(--accent);
+  border-bottom: 1px solid color-mix(in oklab, var(--accent) 40%, transparent);
+  padding-bottom: 1px;
+  transition: all 0.15s;
+}
+.link:hover { border-bottom-color: var(--accent); filter: brightness(1.15); }
+
+/* Layout primitives */
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 32px;
+  position: relative;
+}
+
+.hstack { display: flex; align-items: center; gap: 12px; }
+.vstack { display: flex; flex-direction: column; gap: 12px; }
+.grow { flex: 1; }
+
+/* App shell */
+.app {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  border-right: 1px solid var(--line);
+  background: color-mix(in oklab, var(--bg) 92%, transparent);
+  backdrop-filter: blur(12px);
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  z-index: 10;
+}
+
+.main-column {
+  min-width: 0;
+  min-height: 100vh;
+}
+
+@media (max-width: 900px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar { position: fixed; inset: 0 auto 0 0; width: 240px; transform: translateX(-100%); transition: transform .2s ease; }
+  .sidebar.open { transform: translateX(0); }
+  .main-column { padding-top: 56px; }
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+}
+.brand-mark {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--bg-2);
+  color: #1a1423;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    0 0 0 1px var(--line),
+    0 0 0 2px color-mix(in oklab, var(--accent) 50%, transparent),
+    0 0 18px -4px var(--accent-glow);
+  flex-shrink: 0;
+}
+.brand-mark img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: saturate(0.6) contrast(1.05);
+  mix-blend-mode: luminosity;
+}
+.brand-mark::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,126,219,0.35), rgba(255,183,77,0.12));
+  mix-blend-mode: color;
+  pointer-events: none;
+}
+[data-theme="light"] .brand-mark img { mix-blend-mode: normal; filter: none; }
+[data-theme="light"] .brand-mark::after { display: none; }
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.nav-section {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  padding: 8px 10px 4px;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: var(--rad-sm);
+  color: var(--text-dim);
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: all 0.12s;
+  position: relative;
+}
+.nav-link:hover { background: var(--bg-1); color: var(--text); }
+.nav-link.active {
+  background: var(--bg-1);
+  color: var(--text);
+}
+.nav-link.active::before {
+  content: "";
+  position: absolute;
+  left: -16px;
+  top: 6px; bottom: 6px;
+  width: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
+  border-radius: 0 2px 2px 0;
+}
+.nav-link .icon {
+  width: 16px; height: 16px;
+  color: var(--text-mute);
+  flex-shrink: 0;
+}
+.nav-link.active .icon { color: var(--accent); }
+
+.nav-meta {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-faint);
+}
+
+.sidebar-foot {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-mute);
+}
+.status-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--neon-cyan);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--neon-cyan) 18%, transparent),
+              0 0 12px var(--neon-cyan);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Page */
+.page {
+  padding: 48px 56px 96px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+@media (max-width: 700px) {
+  .page { padding: 32px 20px 80px; }
+}
+
+.page-head {
+  margin-bottom: 40px;
+}
+.page-title {
+  font-size: clamp(32px, 4.2vw, 52px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  margin-bottom: 12px;
+}
+.page-sub {
+  color: var(--text-dim);
+  font-size: 16px;
+  max-width: 60ch;
+  line-height: 1.55;
+}
+
+/* Focus rings */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--rad-sm);
+}
+
+/* Mobile top bar */
+.mobile-top {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 56px;
+  background: color-mix(in oklab, var(--bg) 90%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+  z-index: 20;
+  padding: 0 16px;
+  align-items: center;
+  gap: 12px;
+}
+@media (max-width: 900px) {
+  .mobile-top { display: flex; }
+}
+
+/* ============================================================
+   REDUCED MOTION — the site-wide cancel
+   ============================================================
+   This file had ZERO `prefers-reduced-motion` blocks while running
+   `.status-dot { animation: pulse 2s infinite }` in the persistent sidebar
+   footer — on every page, forever, uncancelled. Perpetual motion is the single
+   case this media query most exists to stop, and `.thinking .dot`
+   (components.css) was the second.
+
+   The cancel is global rather than per-rule on purpose: a per-rule cancel is a
+   thing an author has to remember, and the evidence that authors do not is that
+   two infinite animations shipped. `spa/tools/site motion` (checks M-a, M-b)
+   now fails the build if a transition or an infinite animation escapes this.
+
+   1ms, NOT 0s. `transitionend` never fires at `0s`, so any JS awaiting one
+   hangs forever — established empirically in app-kit's motion work and repeated
+   here because it is the exact mistake this block would otherwise introduce.
+   `animation-iteration-count: 1` is what actually stops a `pulse 2s infinite`;
+   shortening its duration alone would only make it blink faster.
+
+   Both states of every figure stay legible without motion — that is a rule of
+   the figures (see docs/plans/viz-kit.md §3.5), not of this block. This block
+   only removes the travel between them. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 1ms !important;
+    transition-delay: 0ms !important;
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}

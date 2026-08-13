@@ -1,0 +1,117 @@
+NO SOURCE LINE, NO NUMBER
+A 39-second silent film. geoffmiller.cloud
+
+This file is the complete text of the film, in order, with timings. It exists
+because a rendered video is opaque to search engines, to screen readers, and to
+anyone whose player will not autoplay. Nothing in the film is conveyed by
+motion, colour or sound alone; everything it says is written below. Paste this
+into the body of any post the film is attached to.
+
+THE FILM CARRIES A SILENT AUDIO TRACK. Remotion inserts one by default and it
+is kept deliberately, because several platforms reject or mis-handle an MP4
+with no audio stream at all. It contains no speech, no music and no sound
+effect, so there is nothing for captions to caption. That is a property worth
+stating rather than eliding: it means this transcript is complete rather than
+supplementary.
+
+Format: MP4 / H.264 High (avc1.640020) / yuv420p, 1080x1080, 30fps,
+1170 frames, 39.06 seconds, 3.30 MB. One silent AAC track.
+Poster frame: 660 (13.2s) — the struck claim, chosen because a poster is seen
+without the film playing.
+
+--------------------------------------------------------------------------
+01 / CLAIM                                                    0.0s - 7.0s
+
+    Cut cloud spend 70%.
+
+    ______________________________
+    ( no source line )
+
+    Every résumé says something like this.
+
+--------------------------------------------------------------------------
+02 / RULE                                                     7.0s - 16.0s
+
+    Every number is exactly one of three things.
+
+    1  A PUBLISHED SOURCE
+       publisher · title · year · a fetched URL
+
+    2  ARITHMETIC OF THE DRAWING
+       countable off the picture by a hostile eye
+
+    3  A LABELLED ESTIMATE
+       labelled as an estimate, in words
+
+    There is no fourth category.
+
+--------------------------------------------------------------------------
+03 / VERDICT                                                  16.0s - 26.0s
+
+    Cut cloud spend 70%.                    [struck through]
+    ( no source line )
+
+    1  a published source            ✗
+    2  arithmetic of the drawing     ✗
+    3  a labelled estimate           ✗
+
+    So it was cut from this résumé.
+    claim-verdicts.md · 2026-08-07
+
+    Two numbers, one origin, no stated method.
+
+    [The file named on screen is shortened to fit the frame. Its full path is
+     docs/specializations-claim-verdicts.md in the geoffmiller.cloud repository.
+     The entry reads: "65-80% savings" / "30-60% savings" — SELF-CONTRADICTED,
+     two numbers, one origin, no stated method. Publish no savings percentage.]
+
+--------------------------------------------------------------------------
+04 / WHAT HOLDS                                               26.0s - 35.0s
+
+    What survived the rule.
+
+    u* = 1 − d
+    The utilisation at which a commitment breaks even against on-demand,
+    at discount d.
+    ARITHMETIC · checkable in one line
+
+    12 × 6 × 3 = 216 → 6 × 3 = 18
+    Interface endpoints, billed per VPC per AZ, centralised into one
+    shared VPC.
+    ARITHMETIC · shown, not asserted
+
+    Neither one asks you to trust me.
+
+--------------------------------------------------------------------------
+05 / CARD                                                     35.0s - 39.0s
+
+    Geoffrey Miller
+    Principal Cloud Architect × Agentic AI Engineer
+
+    geoffmiller.cloud
+
+    Every figure on the site carries its source line.
+
+--------------------------------------------------------------------------
+
+ALT TEXT (for platforms that accept one,
+under 300 characters):
+
+Five title cards. A résumé claim, "Cut cloud spend 70%", is shown with an empty
+source line, tested against three categories of provenance, failed by all three
+and struck out. Two figures that pass replace it. Ends on a name card.
+
+ACCESSIBILITY NOTES
+
+- No audio. Nothing requires captions.
+- A still contact sheet carrying every word of the film, one frame per act, is
+  published beside it as contact-sheet.png. Hand that to anyone who has motion
+  reduced at the OS level; a video cannot answer prefers-reduced-motion and
+  this is the replacement rather than an apology for it.
+- Wherever this film is embedded on a surface its author controls, it must be
+  <video controls preload="none" poster="poster.png"> with NO autoplay and NO
+  loop. On LinkedIn, autoplay is the platform's behaviour and cannot be
+  overridden; that is a known and unfixable regression of this format.
+- Every colour pair in the film is measured in motion-lab/tools/contrast.mjs
+  against the opaque surface it is drawn on. Lowest measured pair: 3.73:1
+  (--text-mute chrome at 30px). Every pair carrying content: >= 5.27:1.
