@@ -1,0 +1,265 @@
+/* ============================================================
+   Deep project documentation — architecture views + decision records
+   Consumed by components/Deep.jsx (ArchitectureView, DecisionList).
+   Tokens only; no existing selector is touched.
+   ============================================================ */
+
+/* ---- local tokens ------------------------------------------------------ */
+.arch {
+  --arch-1: var(--neon-pink);
+  --arch-2: var(--neon-cyan);
+  --arch-3: var(--neon-amber);
+  --arch-4: var(--neon-purple);
+  --arch-trusted: var(--neon-cyan);
+  --arch-restricted: var(--neon-amber);
+  --arch-untrusted: var(--neon-red);
+  --arch-loose: var(--text-faint);
+  --arch-edge: var(--text-faint);
+  --arch-edge-cross: var(--accent);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+/* --arch-4 and --arch-untrusted used to be re-hardcoded here for the light
+   theme, because --neon-purple and --neon-red were left at their dark values by
+   [data-theme="light"]. styles.css now remaps both, so the local copies are
+   gone and this block carries only what is genuinely local.
+
+   The remaining rule is ungated on purpose: var(--text-mute) is token
+   arithmetic that follows the active palette, so it stays correct under
+   data-aesthetic terminal/outrun. Anything with a LITERAL colour added here
+   must be gated :not([data-aesthetic="terminal"]):not([data-aesthetic="outrun"])
+   — both force dark surfaces underneath data-theme="light". That is exactly
+   why the two literals above moved out. */
+[data-theme="light"] .arch {
+  --arch-edge: var(--text-mute);
+}
+
+/* ---- diagram ----------------------------------------------------------- */
+.arch-cap { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-mute); }
+
+.arch-canvas {
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  border-radius: var(--rad-lg);
+  padding: 18px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+.arch-svg { display: block; margin: 0 auto; }
+
+.arch-svg text { font-family: var(--font-mono); }
+.arch-t-lane { font-size: 10px; letter-spacing: 0.12em; }
+.arch-t-trust { font-size: 9px; letter-spacing: 0.1em; }
+.arch-t-kind { font-size: 9px; letter-spacing: 0.1em; }
+.arch-t-node { font-size: 11px; letter-spacing: -0.005em; font-family: var(--font-sans); }
+.arch-t-num { font-size: 9px; letter-spacing: 0.02em; }
+
+/* ---- component roster (the text carrier for the boxes) ----------------- */
+.arch-legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.arch-legend-lane { background: var(--bg-1); border: 1px solid var(--line); border-radius: var(--rad); padding: 14px 16px; }
+.arch-legend-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+.arch-legend-swatch { display: inline-block; width: 10px; height: 2px; border-radius: 2px; flex-shrink: 0; }
+.arch-legend-trust { color: var(--text-mute); letter-spacing: 0.06em; }
+.arch-legend-note { font-size: 13px; line-height: 1.55; color: var(--text-dim); margin: 0 0 10px; }
+.arch-legend-items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.arch-legend-items li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; padding-left: 14px; position: relative; }
+.arch-legend-items li::before { content: "›"; position: absolute; left: 0; top: 0; color: var(--accent); font-family: var(--font-mono); }
+.arch-legend-name { font-size: 13.5px; font-weight: 500; color: var(--text); }
+.arch-legend-kind { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-mute); }
+.arch-legend-desc { flex-basis: 100%; font-size: 13px; line-height: 1.55; color: var(--text-dim); }
+
+/* ---- numbered connections --------------------------------------------- */
+.arch-edges { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; border: 1px solid var(--line); border-radius: var(--rad); overflow: hidden; background: var(--line); }
+.arch-edge { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: baseline; padding: 11px 16px; background: var(--bg-1); }
+.arch-edge-num { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--text-faint); }
+.arch-edge-num[data-cross="yes"] { color: var(--accent); }
+.arch-edge-body { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; min-width: 0; }
+.arch-edge-path { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 8px; min-width: 0; }
+.arch-edge-node { font-size: 13.5px; color: var(--text); }
+.arch-edge-arrow { font-family: var(--font-mono); font-size: 13px; color: var(--text-faint); }
+.arch-edge-label { font-family: var(--font-mono); font-size: 11px; color: var(--text-mute); }
+.arch-edge-cross { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); padding: 2px 7px; border: 1px solid color-mix(in oklab, var(--accent) 35%, var(--line)); border-radius: 3px; background: var(--accent-soft); }
+
+@media (max-width: 640px) {
+  .arch-canvas { padding: 12px; border-radius: var(--rad); }
+  .arch-edge { grid-template-columns: 1fr; gap: 6px; }
+}
+
+/* ============================================================
+   Decision records (ADR)
+   ============================================================ */
+.adr-list {
+  --adr-ok: var(--neon-cyan);
+  --adr-warn: var(--neon-amber);
+  --adr-bad: var(--neon-red);
+  --adr-old: var(--neon-purple);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+/* The light-theme re-hardcoding of --adr-bad and --adr-old came out on
+   2026-08-07: styles.css now remaps --neon-red and --neon-purple for the light
+   theme (gated against the two dark aesthetics), so both inherit the fix. */
+
+.adr { background: var(--bg-1); border: 1px solid var(--line); border-radius: var(--rad-lg); padding: 22px 24px; position: relative; overflow: hidden; scroll-margin-top: 24px; }
+.adr::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--accent); opacity: 0.3; }
+
+.adr-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; }
+.adr-id { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+.adr-title { font-size: 16.5px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.35; margin: 0; color: var(--text); flex: 1; min-width: 200px; }
+.adr-status { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.04em; text-transform: uppercase; padding: 3px 8px; border: 1px solid var(--line); border-radius: 3px; white-space: nowrap; }
+
+.adr-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+.adr-date { font-family: var(--font-mono); font-size: 11px; color: var(--text-mute); }
+
+.adr-block { margin-top: 18px; }
+.adr-label { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-mute); margin-bottom: 8px; }
+.adr-prose { font-size: 14.5px; line-height: 1.65; color: var(--text-dim); margin: 0 0 10px; max-width: 70ch; }
+.adr-prose:last-child { margin-bottom: 0; }
+.adr-decision { padding: 14px 16px; background: var(--accent-soft); border-left: 2px solid var(--accent); border-radius: var(--rad); }
+.adr-decision .adr-prose { color: var(--text); }
+
+.adr-items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.adr-item { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: baseline; }
+.adr-item-dot { width: 6px; height: 6px; border-radius: 50%; transform: translateY(-1px); }
+.adr-item-body { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; min-width: 0; }
+.adr-item-label { font-size: 14px; font-weight: 600; color: var(--text); }
+.adr-item-text { font-size: 14px; line-height: 1.6; color: var(--text-dim); max-width: 70ch; }
+
+.adr-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--line-soft); }
+.adr-foot .adr-label { margin-bottom: 0; }
+.adr-super { appearance: none; font: inherit; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; padding: 5px 10px; background: var(--bg); border: 1px solid var(--line); border-radius: var(--rad-sm); color: var(--text-dim); font-family: var(--font-mono); font-size: 11.5px; transition: all .15s; }
+.adr-super:not(.is-static):hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.adr-super.is-static { cursor: default; }
+
+@media (max-width: 640px) {
+  .adr { padding: 18px 18px; }
+  .adr-title { min-width: 0; }
+}
+
+/* ============================================================
+   INTERACTIVE ARCHITECTURE DIAGRAM
+   A fifteen-connection diagram is a thicket until you can isolate
+   one line. Hovering (or tabbing to) a connection glows it and
+   fades the rest; clicking its number pins a detail card so the
+   information lives next to the thing it describes instead of in
+   a list below the fold.
+   ============================================================ */
+
+.arch-canvas { position: relative; }
+
+.arch-edge-g .arch-edge-line,
+.arch-edge-g .arch-badge circle,
+.arch-edge-g .arch-badge text {
+  transition: opacity .16s ease, stroke-width .16s ease, filter .16s ease;
+}
+
+/* Fade the field only while something is actually focused, so the resting
+   state of the diagram is unchanged. */
+.arch-canvas.has-focus .arch-edge-g:not(.is-hot) .arch-edge-line,
+.arch-canvas.has-focus .arch-edge-g:not(.is-hot) .arch-badge { opacity: .16; }
+
+.arch-edge-g.is-hot .arch-edge-line {
+  stroke-width: 2.4;
+  filter: drop-shadow(0 0 5px var(--accent-glow));
+}
+.arch-edge-g.is-hot .arch-badge circle {
+  stroke-width: 2;
+  filter: drop-shadow(0 0 6px var(--accent-glow));
+}
+
+.arch-badge { cursor: pointer; }
+.arch-badge:focus { outline: none; }
+.arch-badge:focus-visible circle {
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 7px var(--accent-glow));
+}
+
+.arch-node-hot { filter: drop-shadow(0 0 6px var(--accent-glow)); }
+
+/* ---- detail card ---- */
+.arch-card {
+  position: absolute;
+  z-index: 5;
+  width: 292px;
+  max-width: calc(100% - 16px);
+  background: var(--bg-1);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--rad-md);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, .55);
+  overflow: hidden;
+}
+.arch-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 8px 8px 11px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--line);
+  cursor: grab;
+  touch-action: none;          /* let the drag win over page scroll */
+  user-select: none;
+}
+.arch-card-head:active { cursor: grabbing; }
+.arch-card-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: .06em;
+}
+.arch-card-kind {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: .12em;
+  color: var(--text-mute);
+}
+.arch-card-x {
+  margin-left: auto;
+  appearance: none;
+  background: none;
+  border: none;
+  color: var(--text-mute);
+  font-size: 17px;
+  line-height: 1;
+  padding: 0 3px;
+  cursor: pointer;
+}
+.arch-card-x:hover { color: var(--text); }
+.arch-card-body { padding: 11px; }
+.arch-card-route {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.arch-card-arrow { color: var(--accent); }
+.arch-card-label {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+.arch-card-note {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-mute);
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arch-edge-g .arch-edge-line,
+  .arch-edge-g .arch-badge circle,
+  .arch-edge-g .arch-badge text { transition: none; }
+}
